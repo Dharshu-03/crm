@@ -91,3 +91,118 @@
     border-radius: 16px;
 
 }
+
+.popup-overlay-emp {
+
+
+    position: fixed;
+    /* fixed ensures it covers entire screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.emppopup {
+    background-color: #FFFFFF;
+    height: 830px;
+    width: 1094px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    z-index: 1001;
+    box-sizing: border-box;
+    padding: 10px;
+    box-shadow: 0px 4px 50px rgba(33, 33, 33, 0.08), 0px 4px 6px rgba(33, 33, 33, 0.04);
+    border-radius: 16px;
+
+}
+
+.emptab input {
+    box-sizing: border-box;
+    width: 500.31px;
+    height: 52.47px;
+    border: 0.936902px solid #3E3E3E;
+    border-radius: 11.2428px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    margin-left: 40px;
+    color: #000000;
+
+}
+
+.emptab label {
+
+    height: 26px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 17.2822px;
+    line-height: 26px;
+    color: #5E5E5E;
+    display: block;
+    margin-left: 40px;
+
+
+}
+
+.input-group {
+    margin: 20px 0px;
+}
+
+.emppopupheading {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 25px 20px 25px;
+    box-sizing: border-box;
+}
+
+.emppopupheading h3 {
+
+    width: 472px;
+    height: 26px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 26px;
+    letter-spacing: -0.2px;
+    color: #0B0B0B;
+
+}
+
+.emppopupheading img {
+    height: 24px;
+    width: 24px;
+}
+
+.emptab .save {
+    width: 190px;
+    height: 50px;
+    background-color: #D9D9D9;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 27px;
+    text-align: center;
+    color: #636060;
+    border: none;
+    border-radius: 15px;
+    margin: 180px 40px 0px 850px;
+    box-sizing: border-box;
+}
+
+form {
+    box-sizing: border-box;
+}
