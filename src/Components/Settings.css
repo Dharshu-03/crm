@@ -1,0 +1,151 @@
+.settings {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(255, 255, 255);
+    height: 100vh;
+}
+
+.main>hr {
+    border: none;
+    border: 1px solid #9F9F9F;
+    box-sizing: border-box;
+
+}
+
+.settings h3 {
+    height: 108px;
+}
+
+.main {
+    width: calc(100% - 220px);
+    background-color: #fff;
+}
+
+.beforetab {
+    margin: 15px 35px 38px 35px;
+}
+
+.beforetab h3 {
+
+    height: 40px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 40px;
+    letter-spacing: -0.0025em;
+    color: #616161;
+    margin-bottom: 15px;
+
+}
+
+.main label {
+    width: 91px;
+    height: 26px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 17.2822px;
+    line-height: 26px;
+    margin-left: 25px;
+    color: #5E5E5E;
+
+
+    display: block;
+}
+
+.tab {
+    background-color: #fff;
+    width: 1094px;
+    height: 772px;
+    padding-top: 15px;
+    box-sizing: border-box;
+
+    position: relative;
+    border: 1px solid #B1B1B1;
+    border-radius: 16px;
+
+
+}
+
+form {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-items: right;
+    height: 605.41px;
+}
+
+.tab h2 {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #292929;
+    margin-left: 25px;
+    margin-bottom: 10px;
+
+}
+
+.tab input {
+    box-sizing: border-box;
+    width: 500.31px;
+    height: 52.47px;
+    border: 0.936902px solid #3E3E3E;
+    border-radius: 11.2428px;
+    margin-left: 25px;
+    padding: 10px 20px;
+
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    /* identical to box height */
+
+    color: #000000;
+
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+
+}
+
+form .btn {
+
+    position: absolute;
+    bottom: 60px;
+    right: 20px;
+    width: 190px;
+    height: 50px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 27px;
+
+    text-align: center;
+    color: #636060;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 74px;
+    gap: 10px;
+    background: #D9D9D9;
+    border-radius: 15px;
+    border: none;
+}
+
+.input-group {
+    margin: 10px 0px;
+}
