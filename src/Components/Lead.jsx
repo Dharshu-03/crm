@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Nav from './Navbar.jsx'
 import './Lead.css'
+import API from "../api";
 import { useEffect } from "react";
 const Lead = () => {
     const navigate = useNavigate();
@@ -32,20 +33,17 @@ const Lead = () => {
         e.preventDefault();
 
         try {
-            const formData = new FormData();
-            formData.append("name", name);
-            formData.append("email", email);
-            formData.append("date", date);
-            formData.append("source", srcs);
-            formData.append("location", location);
-            formData.append("language", language);
-
-
-            // await API.post("/api/products/add", formData, {
-            //     headers: { "Content-Type": "multipart/form-data" }
-            // });
+            await API.post("/api/leads/add", {
+                name,
+                email,
+                date,
+                source: srcs,
+                location,
+                language
+            });
 
             alert("Lead added successfully");
+
             setname("");
             setEmail("");
             setdate("");
@@ -55,7 +53,7 @@ const Lead = () => {
 
         } catch (err) {
             console.error(err);
-            alert("Failed to add employee");
+            alert("Failed to add lead");
         }
     };
     return (
@@ -152,8 +150,8 @@ const Lead = () => {
                                         <img onClick={() => setShowTypePopup(false)} src="/images/close.png" alt="" />
                                     </div>
                                     <form onSubmit={handleSubmit} action="">
-                                        <div className="input-group"><label>Name</label><input type='email' value={name} onChange={e => setname(e.target.value)} /></div>
-                                        <div className="input-group"><label>Email</label><input value={email} onChange={e => setEmail(e.target.value)} /></div>
+                                        <div className="input-group"><label>Name</label><input type='text' value={name} onChange={e => setname(e.target.value)} /></div>
+                                        <div className="input-group"><label>Email</label><input type='email' value={email} onChange={e => setEmail(e.target.value)} /></div>
                                         <div className="input-group"><label>Source</label><input value={srcs} onChange={e => setsources(e.target.value)} /></div>
                                         <div className="input-group"><label>Date</label><input type='date' value={date} onChange={e => setdate(e.target.value)} /></div>
                                         <div className="input-group"><label>Location</label><input value={location} onChange={e => setlocation(e.target.value)} /></div>
