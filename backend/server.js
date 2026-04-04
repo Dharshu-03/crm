@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import leadroutes from "./routes/leadroutes.js";
+import employeeroutes from "./routes/employeeroutes.js"
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // ✅ Routes
 app.use("/api/leads", leadroutes);
+app.use("/api/employees", employeeroutes);
+
 
 
 // ✅ Serve React build

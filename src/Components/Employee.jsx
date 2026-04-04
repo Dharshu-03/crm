@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Nav from './Navbar.jsx'
 import './Employee.css'
 import { useEffect } from "react";
+import API from "../api";
 const Employee = () => {
 
     const [search, setSearch] = useState("");
@@ -13,7 +14,34 @@ const Employee = () => {
     const [lname, setlname] = useState("");
     const [location, setlocation] = useState("");
     const [language, setlanguage] = useState("");
-    const handleSubmit = {}
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!fname || !lname || !email || !location || !language) {
+            alert("All fields are required");
+            return;
+        }
+        try {
+            await API.post("/api/employees/add", {
+                fname,
+                lname,
+                email,
+                location,
+                language
+            });
+
+            alert("Employee added successfully");
+
+            setfname("");
+            setlname("");
+            setEmail("");
+            setlocation("");
+            setlanguage("");
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to add employee");
+        }
+    };
     return (
         <>
             <div className='employees'>
@@ -47,7 +75,7 @@ const Employee = () => {
                                         <form onSubmit={handleSubmit} action="">
                                             <div className="input-group"><label>First Name</label><input value={fname} onChange={e => setfname(e.target.value)} /></div>
                                             <div className="input-group"><label>Last Name</label><input value={lname} onChange={e => setlname(e.target.value)} /></div>
-                                            <div className="input-group"><label>Email</label><input disabled value={email} onChange={e => setEmail(e.target.value)} /></div>
+                                            <div className="input-group"><label>Email</label><input value={email} onChange={e => setEmail(e.target.value)} /></div>
                                             <div className="input-group"><label>Location</label><input value={location} onChange={e => setlocation(e.target.value)} /></div>
                                             <div className="input-group"><label>Preferred Language</label><input value={language} onChange={e => setlanguage(e.target.value)} /></div>
                                             <button className='save' type="submit">Save</button>
