@@ -89,6 +89,8 @@
     height: 620px;
     border: 1px solid #B1B1B1;
     border-radius: 16px;
+    margin-left: 35px;
+
 
 }
 
@@ -106,6 +108,10 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+.emptab {
+    padding-top: 40px;
 }
 
 .emppopup {
@@ -205,4 +211,95 @@
 
 form {
     box-sizing: border-box;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    width: 1070px;
+    height: 100px;
+    align-items: center;
+    margin-left: 45px;
+}
+
+.pagination div {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 8px;
+    width: 114px;
+    height: 36px;
+    background: #FFFFFF;
+    border: 1px solid #D0D5DD;
+    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #344054;
+}
+
+.emptab th input {
+    width: 20px;
+    height: 20px;
+    margin: 0px;
+}
+
+.emptab td input {
+    width: 20px;
+    height: 20px;
+    margin: 0px;
+}
+
+
+
+th {
+    height: 44px;
+    box-sizing: border-box;
+}
+
+.employees-table tbody td {
+    height: 72px;
+    text-align: center;
+    border: none;
+    background-color: #fff;
+}
+
+.employees-table tbody tr {
+    border: 1px solid #bebebe;
+}
+
+.employees-table {
+    width: 1108px;
+    border: none;
+    border-collapse: collapse;
+    padding: none;
+}
+
+.employees-table thead tr th:nth-child(1) {
+    padding: 0;
+}
+
+.empid {
+
+    height: 18px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    color: #091E42;
+    background: #F5F6F7;
+    border-radius: 16px;
+    border: none;
+    padding: 0px;
+
+
 }

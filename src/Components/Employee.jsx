@@ -14,6 +14,10 @@ const Employee = () => {
     const [lname, setlname] = useState("");
     const [location, setlocation] = useState("");
     const [language, setlanguage] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [employee, setEmployee] = useState([]);
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!fname || !lname || !email || !location || !language) {
@@ -42,6 +46,47 @@ const Employee = () => {
             alert("Failed to add employee");
         }
     };
+
+
+    const highlightMatch = (text, query) => {
+        if (!query.trim()) return text;
+        const regex = new RegExp(`(${query.trim()})`, "gi");
+        const parts = text.split(regex);
+        return parts.map((part, i) =>
+            regex.test(part)
+                ? <mark key={i} style={{ backgroundColor: "#FFF176", borderRadius: "3px", padding: "0 2px" }}>{part}</mark>
+                : part
+        );
+    };
+
+    const fetchEmployees = async (pageNum = 1, searchTerm = "") => {
+        setLoading(true);
+        try {
+            console.log("hello");
+            const res = await API.get(`/api/employees`, {
+                params: { page: pageNum, search: searchTerm }
+            });
+            setEmployee(res.data.employees);
+            setTotalPages(res.data.totalPages);
+            setPage(res.data.page);
+            console.log(employee);
+            console.log(employee.length);
+        } catch (err) {
+            console.error("Failed to fetch products:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmployees(1, "");
+    }, []);
+
+    const formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        if (isNaN(d)) return "-";
+        return `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)}`;
+    };
     return (
         <>
             <div className='employees'>
@@ -63,7 +108,65 @@ const Employee = () => {
                     </div>
                     <div className='emptab'>
 
-                        <div className="empbox"></div>
+                        <div className="empbox">
+                            {loading ? (
+                                <p style={{ padding: "20px", color: "#888" }}>Loading...</p>
+                            ) : (
+
+                                <table className="employees-table">
+                                    <thead>
+                                        <tr>
+
+                                            <th><input type="checkbox" /></th>
+                                            <th>Name</th>
+                                            <th>Employee ID</th>
+                                            <th>Assigned Leads</th>
+                                            <th>Closed Leads</th>
+                                            <th>status</th>
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {employee.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="11" style={{ textAlign: "center", padding: "20px", color: "#888" }}>
+                                                    {search ? `No products found for "${search}"` : "No leads found"}
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            employee.map((employee, index) => (
+                                                <tr key={employee._id}>
+                                                    <td><input type="checkbox" /></td>
+                                                    <td>{highlightMatch(employee.fname, search)}  {employee.lname}</td>
+                                                    <td > <p className="empid">{employee._id}</p></td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>- <img src="/images/more.png" alt="" /></td>
+
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+
+                            )}
+
+                        </div>
+
+                        <div className="pagination">
+                            <div onClick={() => fetchEmployees(page - 1, "")} disabled={page <= 1}>
+                                <img src="/images/pre.png" alt="" />
+                                Previous
+                            </div>
+                            <span>Page {page} of {totalPages}</span>
+                            <div onClick={() => fetchEmployees(page + 1, "")} disabled={page >= totalPages}>
+
+                                Next
+                                <img src="/images/next.png" alt="" />
+                            </div>
+                        </div>
                         {
                             showTypePopup && (
                                 <div className="popup-overlay-emp" onClick={() => setShowTypePopup(false)}>
