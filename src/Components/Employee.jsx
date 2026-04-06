@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Nav from './Navbar.jsx'
 import './Employee.css'
 import { useEffect } from "react";
+import { useRef } from 'react';
 import API from "../api";
 const Employee = () => {
 
@@ -18,6 +19,10 @@ const Employee = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [employee, setEmployee] = useState([]);
+    const [ellipsisOpenId, setEllipsisOpenId] = useState(null);
+    const ellipsisRef = useRef(null);
+    const [deleteAll, setDelelteAll] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!fname || !lname || !email || !location || !language) {
@@ -47,6 +52,28 @@ const Employee = () => {
         }
     };
 
+    const handleCheckbox = (e) => {
+        setDelelteAll(e.target.checked);
+    };
+    const handleDelete = async (id) => {
+        try {
+            if (!window.confirm(deleteAll ? "Delete all employees?" : "Delete this employee?")) return;
+
+            if (deleteAll) {
+                const ids = employee.map(emp => emp._id);
+
+                await API.post("/api/employees/delete-multiple", { ids });
+            } else {
+                await API.delete(`/api/employees/${id}`);
+            }
+
+            setDelelteAll(false); // reset after delete
+            fetchEmployees();
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const highlightMatch = (text, query) => {
         if (!query.trim()) return text;
@@ -117,7 +144,11 @@ const Employee = () => {
                                     <thead>
                                         <tr>
 
-                                            <th><input type="checkbox" /></th>
+                                            <th><input
+                                                type="checkbox"
+                                                checked={deleteAll}
+                                                onChange={handleCheckbox}
+                                            /></th>
                                             <th>Name</th>
                                             <th>Employee ID</th>
                                             <th>Assigned Leads</th>
@@ -132,18 +163,65 @@ const Employee = () => {
                                         {employee.length === 0 ? (
                                             <tr>
                                                 <td colSpan="11" style={{ textAlign: "center", padding: "20px", color: "#888" }}>
-                                                    {search ? `No products found for "${search}"` : "No leads found"}
+                                                    {search ? `No products found for "${search}"` : "No Employees found"}
                                                 </td>
                                             </tr>
                                         ) : (
                                             employee.map((employee, index) => (
                                                 <tr key={employee._id}>
-                                                    <td><input type="checkbox" /></td>
+                                                    <td>
+                                                        <input type="checkbox" checked={deleteAll} readOnly />
+                                                    </td>
                                                     <td>{highlightMatch(employee.fname, search)}  {employee.lname}</td>
                                                     <td > <p className="empid">{employee._id}</p></td>
                                                     <td>-</td>
                                                     <td>-</td>
-                                                    <td>- <img src="/images/more.png" alt="" /></td>
+                                                    <td>-  <div style={{ position: "relative" }} ref={ellipsisOpenId === employee._id ? ellipsisRef : null}>
+                                                        <button
+                                                            className="ellipsis-btn"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (ellipsisOpenId === employee._id) {
+                                                                    setEllipsisOpenId(null);
+
+                                                                } else {
+                                                                    setEllipsisOpenId(employee._id);
+
+                                                                }
+                                                            }}
+                                                        >⋮</button>
+
+
+
+                                                        {/* Paid invoice ellipsis → view/delete only */}
+                                                        {ellipsisOpenId === employee._id && (
+                                                            <div className="ellipsis-popup" onClick={(e) => e.stopPropagation()}>
+                                                                <div className="invoicepop">
+
+                                                                    <button
+                                                                        className="ellipsis-action-btn"
+                                                                    // onClick={() => {
+                                                                    //     setViewInvoice(invoice);
+                                                                    //     setEllipsisOpenId(null);
+                                                                    // }}
+                                                                    >
+                                                                        <img src="/images/edit.png" alt="" />
+                                                                        <p>Edit</p>
+                                                                    </button>
+                                                                </div>
+                                                                <div className="invoicepop">
+
+                                                                    <button
+                                                                        className="ellipsis-action-btn"
+                                                                        onClick={() => handleDelete(employee._id)}
+                                                                    >
+                                                                        <img src="/images/delete.png" alt="" />
+                                                                        <p>Delete</p>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div></td>
 
                                                 </tr>
                                             ))
@@ -188,6 +266,8 @@ const Employee = () => {
                                 </div>
                             )
                         }
+
+
 
 
                     </div>

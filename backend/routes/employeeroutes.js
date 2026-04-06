@@ -37,4 +37,32 @@ router.get("/", async (req, res) => {
     }
 });
 
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deleted = await Employee.findByIdAndDelete(id);
+
+        if (!deleted) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        res.json({ message: "Employee deleted successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.post("/delete-multiple", async (req, res) => {
+    const { ids } = req.body;
+
+    await Employee.deleteMany({
+        _id: { $in: ids }
+    });
+
+    res.json({ message: "Deleted multiple employees" });
+});
 export default router;

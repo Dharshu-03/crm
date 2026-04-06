@@ -303,3 +303,74 @@ th {
 
 
 }
+
+.ellipsis-popup {
+    position: absolute;
+    right: 0;
+    top: 28px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 95px;
+    width: 140px;
+}
+
+.ellipsis-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 6px;
+    color: #383E49;
+    line-height: 1;
+
+}
+
+.invoicepop {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 10px;
+
+}
+
+.ellipsis-action-btn {
+    width: 120px;
+    height: 32px;
+    border: none;
+    border-radius: 10px;
+
+    margin-top: 10px;
+
+    background-color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+
+}
+
+.ellipsis-action-btn:hover {
+    background-color: #e6e6e6;
+}
+
+.ellipsis-action-btn img {
+    height: 18px;
+    width: 18px;
+    margin-left: 2px;
+}
+
+.ellipsis-action-btn p {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #00252A;
+    margin-left: 10px;
+
+}

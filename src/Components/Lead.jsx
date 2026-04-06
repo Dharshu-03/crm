@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Nav from './Navbar.jsx'
 import './Lead.css'
 import API from "../api";
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 const Lead = () => {
     const navigate = useNavigate();
     // const [stats, setStats] = useState({
@@ -29,7 +28,14 @@ const Lead = () => {
     const [language, setlanguage] = useState("");
     const [showTypePopup, setShowTypePopup] = useState(false);
     const [leads, setLeads] = useState([]);
-
+    const [showCsvPopup, setShowCsvPopup] = useState(false);
+    const [csvFile, setCsvFile] = useState(null);
+    const [csvUploading, setCsvUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadDone, setUploadDone] = useState(false);
+    const [uploadedCount, setUploadedCount] = useState(0);
+    const [selectedEmployees, setSelectedEmployees] = useState([]);
+    const abortControllerRef = useRef(null);
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -76,7 +82,7 @@ const Lead = () => {
             const res = await API.get(`/api/leads`, {
                 params: { page: pageNum, search: searchTerm }
             });
-            setLeads(res.data.leads);
+            setLeads(Array.isArray(res.data.leads) ? res.data.leads : []);
             setTotalPages(res.data.totalPages);
             setPage(res.data.page);
             console.log(leads);
@@ -87,7 +93,19 @@ const Lead = () => {
             setLoading(false);
         }
     };
+    const handleCsvChange = (e) => {
+        const file = e.target.files?.[0];
 
+        if (file) {
+            console.log("Selected file:", file);
+            setCsvFile(file);
+        }
+    };
+
+    const handleCsvDrop = (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files.length > 0) setCsvFile(e.dataTransfer.files[0]);
+    };
     useEffect(() => {
         fetchLeads(1, "");
     }, []);
@@ -96,6 +114,62 @@ const Lead = () => {
         const d = new Date(dateStr);
         if (isNaN(d)) return "-";
         return `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)}`;
+    };
+
+    const handleUpload = async () => {
+        if (!csvFile) return;
+
+        const formData = new FormData();
+        formData.append("csv", csvFile);
+
+        abortControllerRef.current = new AbortController();
+        setCsvUploading(true);
+        setUploadProgress(0);
+        setUploadDone(false);
+
+        try {
+            const res = await API.post("/api/leads/upload-csv", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+                signal: abortControllerRef.current.signal,
+                onUploadProgress: (progressEvent) => {
+                    const percent = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
+                    );
+                    setUploadProgress(percent);
+                },
+            });
+
+            setUploadedCount(res.data.count);
+            setUploadDone(true);      // show Upload button now
+            setCsvUploading(false);
+
+        } catch (err) {
+            if (err.name === "CanceledError" || err.name === "AbortError") {
+                // silently cancelled
+            } else {
+                alert(err.response?.data?.error || "Failed to upload CSV");
+            }
+            setCsvUploading(false);
+            setUploadProgress(0);
+            setUploadDone(false);
+        }
+    };
+
+    const handleCancelUpload = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        setCsvUploading(false);
+        setUploadProgress(0);
+        setUploadDone(false);
+    };
+
+    const handleConfirmUpload = () => {
+        setShowCsvPopup(false);
+        setCsvFile(null);
+        setUploadProgress(0);
+        setUploadDone(false);
+        fetchLeads(1, "");
     };
 
     return (
@@ -116,8 +190,8 @@ const Lead = () => {
                     <div className="leadbeforetab">
                         <h3>Home   &gt;   Leads</h3>
                         <div>
-                            <button className='add' onClick={() => setShowTypePopup(true)}>Add Manually</button>
-                            <button className='add'>Add CSV</button>
+                            <button className='add' onClick={() => { setShowTypePopup(true); setShowCsvPopup(false); }}>Add Manually</button>
+                            <button className='add' onClick={() => { setShowTypePopup(false); setShowCsvPopup(true); }}>Add CSV</button>
                         </div>
                     </div>
                     <div className='leadtab'>
@@ -147,7 +221,7 @@ const Lead = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {leads.length === 0 ? (
+                                    {!leads || leads.length === 0 ? (
                                         <tr>
                                             <td colSpan="11" style={{ textAlign: "center", padding: "20px", color: "#888" }}>
                                                 {search ? `No products found for "${search}"` : "No leads found"}
@@ -189,6 +263,171 @@ const Lead = () => {
                             </div>
                         </div>
                         {/* )} */}
+
+
+                        {showCsvPopup && (
+                            <div
+                                className="popup-overlay"
+                                onClick={() => !csvUploading && !uploadDone && setShowCsvPopup(false)}
+                            >
+                                <div className="csvpopup" onClick={(e) => e.stopPropagation()}>
+
+                                    {/* Header */}
+                                    <div className="csvheading">
+                                        <div>
+                                            <h3>CSV Upload</h3>
+                                            <p>Add your document here</p>
+                                        </div>
+                                        {!csvUploading && !uploadDone && (
+                                            <img
+                                                onClick={() => setShowCsvPopup(false)}
+                                                src="/images/close.png"
+                                                alt=""
+                                            />
+                                        )}
+                                    </div>
+
+                                    {/* ── Step 1: Pick file ── */}
+                                    {!csvUploading && !uploadDone && (
+                                        <>
+                                            <div
+                                                className="csv-upload-area"
+                                                onDragOver={(e) => e.preventDefault()}
+                                                onDrop={handleCsvDrop}
+                                            >
+                                                <img src="/images/upload.png" alt="" />
+                                                <br />
+                                                <p>Drag your file(s) to start uploading</p>
+                                                <p>OR</p>
+                                                <input
+                                                    type="file"
+                                                    accept=".csv"
+                                                    style={{ display: "none" }}
+                                                    onChange={handleCsvChange}
+                                                    id="csv-input"
+                                                />
+                                                <label htmlFor="csv-input" className="browse-btn">
+                                                    Browse files
+                                                </label>
+
+                                                {csvFile && (
+                                                    <div className="file-preview">
+                                                        <div className="csvdetails">
+                                                            <p className="file-name">{csvFile.name}</p>
+                                                        </div>
+                                                        <img src="/images/download.png" alt="" />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="csv-buttons">
+                                                <button
+                                                    onClick={() => {
+                                                        setShowCsvPopup(false);
+                                                        setCsvFile(null);
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    disabled={!csvFile}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (csvFile) handleUpload();
+                                                    }}
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* ── Step 2: Uploading (progress ring) ── */}
+                                    {csvUploading && (
+                                        <div className="csv-loading">
+                                            <div className="csv-circle-wrap">
+                                                <svg viewBox="0 0 100 100" className="csv-circle-svg">
+                                                    <circle
+                                                        cx="50" cy="50" r="40"
+                                                        fill="none"
+                                                        stroke="#e0e0e0"
+                                                        strokeWidth="8"
+                                                    />
+                                                    <circle
+                                                        cx="50" cy="50" r="40"
+                                                        fill="none"
+                                                        stroke="#4f46e5"
+                                                        strokeWidth="8"
+                                                        strokeLinecap="round"
+                                                        strokeDasharray={`${2 * Math.PI * 40}`}
+                                                        strokeDashoffset={`${2 * Math.PI * 40 * (1 - uploadProgress / 100)}`}
+                                                        transform="rotate(-90 50 50)"
+                                                        style={{ transition: "stroke-dashoffset 0.3s ease" }}
+                                                    />
+                                                </svg>
+                                                <span className="csv-circle-percent">{uploadProgress}%</span>
+                                            </div>
+
+                                            <p className="csv-verifying-text">Verifying and uploading your file...</p>
+                                            <p className="csv-file-name-small">{csvFile?.name}</p>
+
+                                            <button className="csv-cancel-btn" onClick={handleCancelUpload}>
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* ── Step 3: Done — show Upload button to confirm and close ── */}
+                                    {uploadDone && (
+                                        <div className="csv-loading">
+                                            <div className="csv-upload-area">
+                                                <div className="csv-circle-wrap">
+                                                    <svg viewBox="0 0 100 100" className="csv-circle-svg">
+                                                        <circle
+                                                            cx="50" cy="50" r="40"
+                                                            fill="none"
+                                                            stroke="#e0e0e0"
+                                                            strokeWidth="8"
+                                                        />
+                                                        <circle
+                                                            cx="50" cy="50" r="40"
+                                                            fill="none"
+                                                            stroke="#000"
+                                                            strokeWidth="8"
+                                                            strokeLinecap="round"
+                                                            strokeDasharray={`${2 * Math.PI * 40}`}
+                                                            strokeDashoffset="0"
+                                                            transform="rotate(-90 50 50)"
+                                                            style={{ transition: "stroke-dashoffset 0.3s ease" }}
+                                                        />
+                                                    </svg>
+                                                    <span className="csv-circle-percent" style={{ color: "#000" }}>
+                                                        100%
+                                                    </span>
+                                                </div>
+
+                                                <p className="csv-verifying-text">
+                                                    {uploadedCount} lead{uploadedCount !== 1 ? "s" : ""} ready to import
+                                                </p>
+                                                <p className="csv-file-name-small">{csvFile?.name}</p>
+                                            </div>
+                                            <div className="csv-buttons" style={{ marginTop: "8px" }}>
+                                                <button onClick={handleCancelUpload}>Cancel</button>
+                                                <button
+                                                    style={{ background: "#000", color: "#fff" }}
+                                                    onClick={handleConfirmUpload}
+                                                >
+                                                    Upload
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                </div>
+                            </div>
+                        )}
+
+
 
                         {showTypePopup && (
                             <div className="popup-overlay" onClick={() => setShowTypePopup(false)}>
