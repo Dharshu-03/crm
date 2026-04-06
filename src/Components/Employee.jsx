@@ -22,6 +22,8 @@ const Employee = () => {
     const [ellipsisOpenId, setEllipsisOpenId] = useState(null);
     const ellipsisRef = useRef(null);
     const [deleteAll, setDelelteAll] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [editEmployee, setEditEmployee] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -102,6 +104,28 @@ const Employee = () => {
             console.error("Failed to fetch products:", err);
         } finally {
             setLoading(false);
+        }
+    };
+
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+
+        try {
+            await API.put(`/api/employees/${editEmployee._id}`, {
+                fname,
+                lname,
+                location
+            });
+
+            alert("Employee updated successfully");
+
+            setShowEditPopup(false);
+            fetchEmployees();
+
+        } catch (err) {
+            console.error(err);
+            alert("Update failed");
         }
     };
 
@@ -200,10 +224,16 @@ const Employee = () => {
 
                                                                     <button
                                                                         className="ellipsis-action-btn"
-                                                                    // onClick={() => {
-                                                                    //     setViewInvoice(invoice);
-                                                                    //     setEllipsisOpenId(null);
-                                                                    // }}
+                                                                        onClick={() => {
+                                                                            setEllipsisOpenId(null); // close ellipsis
+                                                                            setEditEmployee(employee); // store selected employee
+                                                                            setfname(employee.fname);
+                                                                            setlname(employee.lname);
+                                                                            setEmail(employee.email);
+                                                                            setlocation(employee.location);
+                                                                            setlanguage(employee.language);
+                                                                            setShowEditPopup(true); // open edit popup
+                                                                        }}
                                                                     >
                                                                         <img src="/images/edit.png" alt="" />
                                                                         <p>Edit</p>
@@ -266,6 +296,46 @@ const Employee = () => {
                                 </div>
                             )
                         }
+
+                        {showEditPopup && (
+                            <div className="popup-overlay-emp" onClick={() => setShowEditPopup(false)}>
+                                <div className="emppopup" onClick={(e) => e.stopPropagation()}>
+                                    <div className='emppopupheading'>
+                                        <h3>Edit Employee</h3>
+                                        <img onClick={() => setShowEditPopup(false)} src="/images/close.png" alt="" />
+                                    </div>
+
+                                    <form onSubmit={handleUpdate}>
+                                        <div className="input-group">
+                                            <label>First Name</label>
+                                            <input value={fname} onChange={e => setfname(e.target.value)} />
+                                        </div>
+
+                                        <div className="input-group">
+                                            <label>Last Name</label>
+                                            <input value={lname} onChange={e => setlname(e.target.value)} />
+                                        </div>
+
+                                        <div className="input-group">
+                                            <label>Email</label>
+                                            <input value={email} disabled />
+                                        </div>
+
+                                        <div className="input-group">
+                                            <label>Location</label>
+                                            <input value={location} onChange={e => setlocation(e.target.value)} />
+                                        </div>
+
+                                        <div className="input-group">
+                                            <label>Preferred Language</label>
+                                            <input value={language} disabled />
+                                        </div>
+
+                                        <button className='save' type="submit">Update</button>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
 
 
 

@@ -15,7 +15,10 @@ router.get("/", async (req, res) => {
         const query = {};
 
         if (search.trim()) {
-            query.name = { $regex: search.trim(), $options: "i" };
+            query.$or = [
+                { fname: { $regex: search.trim(), $options: "i" } },
+                { lname: { $regex: search.trim(), $options: "i" } }
+            ];
         }
 
         const total = await Employee.countDocuments(query);
@@ -64,5 +67,28 @@ router.post("/delete-multiple", async (req, res) => {
     });
 
     res.json({ message: "Deleted multiple employees" });
+});
+
+
+router.put("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updated = await Employee.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        res.json(updated);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
 });
 export default router;
