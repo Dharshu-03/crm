@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import Employee from "../models/employee.js"
 import { addEmployee } from "../controllers/employeecontroller.js";
+import Lead from "../models/leads.js";
 const router = express.Router();
 
 router.post("/add", addEmployee);
@@ -41,9 +42,22 @@ router.get("/", async (req, res) => {
 });
 
 
+
+
 router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
+
+        // 🔥 Check if employee has assigned leads
+        const leadCount = await Lead.countDocuments({
+            employeeId: id
+        });
+
+        if (leadCount > 0) {
+            return res.status(400).json({
+                message: "Cannot delete employee with assigned leads"
+            });
+        }
 
         const deleted = await Employee.findByIdAndDelete(id);
 
@@ -60,13 +74,30 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.post("/delete-multiple", async (req, res) => {
-    const { ids } = req.body;
+    try {
+        const { ids } = req.body;
 
-    await Employee.deleteMany({
-        _id: { $in: ids }
-    });
+        // 🔥 find employees with assigned leads
+        const employeesWithLeads = await Lead.distinct("employeeId", {
+            employeeId: { $in: ids }
+        });
 
-    res.json({ message: "Deleted multiple employees" });
+        if (employeesWithLeads.length > 0) {
+            return res.status(400).json({
+                message: "Some employees have assigned leads. Cannot delete."
+            });
+        }
+
+        await Employee.deleteMany({
+            _id: { $in: ids }
+        });
+
+        res.json({ message: "Deleted multiple employees" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
 });
 
 

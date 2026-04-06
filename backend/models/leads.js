@@ -1,12 +1,28 @@
 import mongoose from "mongoose";
 
-const leadsSchema = mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, unique: true },
-    date: { type: Date, required: true },
-    source: { type: String, required: true },
-    location: { type: String, required: true },
-    language: { type: String, required: true }
+const leadsSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    source: String,
+    date: Date,
+    location: String,
+    language: String,
+
+    employeeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Employee",
+        default: null
+    },
+
+    status: {
+        type: String,
+        default: "ongoing"
+    },
+
+    type: {
+        type: String,
+        default: "warm"
+    }
 });
 
 export default mongoose.model("Lead", leadsSchema);

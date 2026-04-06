@@ -6,6 +6,7 @@ import './Employee.css'
 import { useEffect } from "react";
 import { useRef } from 'react';
 import API from "../api";
+
 const Employee = () => {
 
     const [search, setSearch] = useState("");
@@ -24,6 +25,8 @@ const Employee = () => {
     const [deleteAll, setDelelteAll] = useState(false);
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [editEmployee, setEditEmployee] = useState(null);
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,6 +50,7 @@ const Employee = () => {
             setEmail("");
             setlocation("");
             setlanguage("");
+            fetchEmployees();
 
         } catch (err) {
             console.error(err);
@@ -198,7 +202,7 @@ const Employee = () => {
                                                     </td>
                                                     <td>{highlightMatch(employee.fname, search)}  {employee.lname}</td>
                                                     <td > <p className="empid">{employee._id}</p></td>
-                                                    <td>-</td>
+                                                    <td>{employee.assignedLeads}</td>
                                                     <td>-</td>
                                                     <td>-  <div style={{ position: "relative" }} ref={ellipsisOpenId === employee._id ? ellipsisRef : null}>
                                                         <button
@@ -263,7 +267,7 @@ const Employee = () => {
 
                         </div>
 
-                        <div className="pagination">
+                        <div className="emppagination">
                             <div onClick={() => fetchEmployees(page - 1, "")} disabled={page <= 1}>
                                 <img src="/images/pre.png" alt="" />
                                 Previous

@@ -5,6 +5,8 @@ import { addLead } from "../controllers/leadcontroller.js";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
+import Employee from "../models/employee.js";
+
 
 
 
@@ -27,7 +29,30 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
         }
 
         const result = await Lead.insertMany(leads, { ordered: false });
+        const insertedLeads = result;
 
+        const employees = await Employee.find();
+
+        const bulkOps = [];
+
+        insertedLeads.forEach(lead => {
+            const employee = employees.find(emp =>
+                new RegExp(`^${lead.language}$`, "i").test(emp.language)
+            );
+
+            if (employee) {
+                bulkOps.push({
+                    updateOne: {
+                        filter: { _id: lead._id },
+                        update: { $set: { employeeId: employee._id } }
+                    }
+                });
+            }
+        });
+
+        if (bulkOps.length > 0) {
+            await Lead.bulkWrite(bulkOps);
+        }
         res.json({
             message: `${result.length} leads imported successfully`,
             count: result.length,
@@ -75,6 +100,10 @@ function parseCsvWithStreams(filePath) {
                 date: row.date ? new Date(row.date) : null,
                 location: row.location || "",
                 language: row.language || "",
+
+                status: "ongoing",   // ✅ add
+                type: "warm",        // ✅ add
+                employeeId: null     // will assign later
             };
 
             if (!lead.name && !lead.email) return; // skip empty rows

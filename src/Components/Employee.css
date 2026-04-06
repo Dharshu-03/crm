@@ -213,7 +213,7 @@ form {
     box-sizing: border-box;
 }
 
-.pagination {
+.emppagination {
     display: flex;
     justify-content: space-between;
     width: 1070px;
@@ -222,7 +222,7 @@ form {
     margin-left: 45px;
 }
 
-.pagination div {
+.emppagination div {
     box-sizing: border-box;
     display: flex;
     flex-direction: row;

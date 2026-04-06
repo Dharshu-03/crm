@@ -2,16 +2,27 @@ import Lead from "../models/leads.js";
 import fs from "fs";
 
 
+import Employee from "../models/employee.js";
+
 
 export const addLead = async (req, res) => {
     try {
+        const leadData = req.body;
 
-        const lead = new Lead({
-            ...req.body
+        // 🔥 find employee with same language
+        const employee = await Employee.findOne({
+            language: { $regex: `^${leadData.language}$`, $options: "i" }
         });
-        await lead.save();
+
+        const lead = await Lead.create({
+            ...leadData,
+            employeeId: employee ? employee._id : null
+        });
+
         res.status(201).json(lead);
+
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error(err);
+        res.status(500).json({ error: "Failed to add lead" });
     }
 };

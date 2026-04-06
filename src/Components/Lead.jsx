@@ -75,6 +75,8 @@ const Lead = () => {
         );
     };
 
+
+
     const fetchLeads = async (pageNum = 1, searchTerm = "") => {
         setLoading(true);
         try {
@@ -237,9 +239,9 @@ const Lead = () => {
                                                 <td>{formatDate(lead.date)}</td>
                                                 <td>{lead.location}</td>
                                                 <td>{lead.language}</td>
-                                                <td>-</td>
-                                                <td>-</td>
-                                                <td>-</td>
+                                                <td>{lead.employeeId || "-"}</td>
+                                                <td>{lead.status}  </td>
+                                                <td>{lead.type}</td>
                                                 <td>-</td>
                                             </tr>
                                         ))
