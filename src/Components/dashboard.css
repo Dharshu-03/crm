@@ -155,3 +155,30 @@
     margin-left: 40px;
 
 }
+
+.dashboard-table-container {
+    max-height: 350px;
+    /* adjust height */
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+/* optional styling */
+.status-active {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.dashboard-table {
+    width: 1092px;
+    padding-left: 10px;
+    border: none;
+    border-collapse: collapse;
+}
+
+.dashboard-table td {
+    height: 72px;
+
+    padding: 0px;
+    text-align: center;
+}

@@ -26,7 +26,38 @@ const Dashboard = () => {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [editEmployee, setEditEmployee] = useState(null);
 
+    const [employees, setEmployees] = useState([]);
+    const [kpi, setKpi] = useState({
+        unassignedLeads: 0,
+        assignedThisWeek: 0,
+        activeSalesPeople: 0,
+        conversionRate: 0
+    });
 
+    useEffect(() => {
+        fetchKPI();
+    }, []);
+
+    const fetchKPI = async () => {
+        try {
+            const res = await API.get("/api/employees/dashboard/kpi");
+            setKpi(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    useEffect(() => {
+        fetchActiveEmployees();
+    }, []);
+
+    const fetchActiveEmployees = async () => {
+        try {
+            const res = await API.get("/api/employees/active");
+            setEmployees(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
 
 
@@ -77,22 +108,22 @@ const Dashboard = () => {
                             <div className="innerstat">
                                 <img src="/images/s1.png" alt="" />
                                 <div><p>Unassigned Leads</p>
-                                    <h4>5</h4></div>
+                                    <h4>{kpi.unassignedLeads}</h4></div>
                             </div>
                             <div className="innerstat">
                                 <img src="/images/s2.png" alt="" />
                                 <div><p>Assigned This Week</p>
-                                    <h4>5</h4></div>
+                                    <h4>{kpi.assignedThisWeek}</h4></div>
                             </div>
                             <div className="innerstat">
                                 <img src="/images/s3.png" alt="" />
                                 <div><p>Active Salsepeople</p>
-                                    <h4>5</h4></div>
+                                    <h4>{kpi.activeSalesPeople}</h4></div>
                             </div>
                             <div className="innerstat">
                                 <img src="/images/s4.png" alt="" />
                                 <div><p>Conversion Rate</p>
-                                    <h4>5</h4></div>
+                                    <h4>{kpi.conversionRate}%</h4></div>
                             </div>
 
                         </div>
@@ -106,98 +137,40 @@ const Dashboard = () => {
                                 <p style={{ padding: "20px", color: "#888" }}>Loading...</p>
                             ) : (
 
-                                <table className="employees-table">
-                                    <thead>
-                                        <tr>
-
-
-                                            <th>Name</th>
-                                            <th>Employee ID</th>
-                                            <th>Assigned Leads</th>
-                                            <th>Closed Leads</th>
-                                            <th>status</th>
-
-
-
-                                        </tr>
-                                    </thead>
-                                    {/* <tbody>
-                                        {employee.length === 0 ? (
+                                <div className="dashboard-table-container">
+                                    <table className="dashboard-table">
+                                        <thead>
                                             <tr>
-                                                <td colSpan="11" style={{ textAlign: "center", padding: "20px", color: "#888" }}>
-                                                    {search ? `No products found for "${search}"` : "No Employees found"}
-                                                </td>
+                                                <th>Name</th>
+                                                <th>Employee ID</th>
+                                                <th>Assigned Leads</th>
+                                                <th>Closed Leads</th>
+                                                <th>Status</th>
                                             </tr>
-                                        ) : (
-                                            employee.map((employee, index) => (
-                                                <tr key={employee._id}>
-                                                    <td>
-                                                        <input type="checkbox" checked={deleteAll} readOnly />
+                                        </thead>
+
+                                        <tbody>
+                                            {employees.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="5" style={{ textAlign: "center" }}>
+                                                        No Active Employees
                                                     </td>
-                                                    <td>{highlightMatch(employee.fname, search)}  {employee.lname}</td>
-                                                    <td > <p className="empid">{employee._id}</p></td>
-                                                    <td>{employee.ongoingLeads || 0}</td>
-                                                    <td>{employee.closedLeads || 0}</td>
-                                                    <td>-  <div style={{ position: "relative" }} ref={ellipsisOpenId === employee._id ? ellipsisRef : null}>
-                                                        <button
-                                                            className="ellipsis-btn"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (ellipsisOpenId === employee._id) {
-                                                                    setEllipsisOpenId(null);
-
-                                                                } else {
-                                                                    setEllipsisOpenId(employee._id);
-
-                                                                }
-                                                            }}
-                                                        >⋮</button>
-
-
-
-                                                       
-                                                        {ellipsisOpenId === employee._id && (
-                                                            <div className="ellipsis-popup" onClick={(e) => e.stopPropagation()}>
-                                                                <div className="invoicepop">
-
-                                                                    <button
-                                                                        className="ellipsis-action-btn"
-                                                                        onClick={() => {
-                                                                            setEllipsisOpenId(null); // close ellipsis
-                                                                            setEditEmployee(employee); // store selected employee
-                                                                            setfname(employee.fname);
-                                                                            setlname(employee.lname);
-                                                                            setEmail(employee.email);
-                                                                            setlocation(employee.location);
-                                                                            setlanguage(employee.language);
-                                                                            setShowEditPopup(true); // open edit popup
-                                                                        }}
-                                                                    >
-                                                                        <img src="/images/edit.png" alt="" />
-                                                                        <p>Edit</p>
-                                                                    </button>
-                                                                </div>
-                                                                <div className="invoicepop">
-
-                                                                    <button
-                                                                        className="ellipsis-action-btn"
-                                                                        onClick={() => handleDelete(employee._id)}
-                                                                    >
-                                                                        <img src="/images/delete.png" alt="" />
-                                                                        <p>Delete</p>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div></td>
-
                                                 </tr>
-                                            ))
-                                           
-                                        )}
-                                    </tbody> */}
-                                </table>
-
+                                            ) : (
+                                                employees.map(emp => (
+                                                    <tr key={emp._id}>
+                                                        <td>{emp.fname} {emp.lname}</td>
+                                                        <td>{emp._id}</td>
+                                                        <td>{emp.ongoingLeads}</td>
+                                                        <td>{emp.closedLeads}</td>
+                                                        <td >
+                                                            <li className="status-active">{emp.status}</li></td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
 
                         </div>

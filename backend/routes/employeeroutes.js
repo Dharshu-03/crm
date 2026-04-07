@@ -4,6 +4,7 @@ import Employee from "../models/employee.js"
 import { addEmployee } from "../controllers/employeecontroller.js";
 import Lead from "../models/leads.js";
 const router = express.Router();
+import mongoose from "mongoose";
 
 router.post("/add", addEmployee);
 router.get("/", async (req, res) => {
@@ -166,6 +167,125 @@ router.put("/:id", async (req, res) => {
         }
 
         res.json(updated);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.get("/active", async (req, res) => {
+    try {
+        const employees = await Employee.aggregate([
+            {
+                $lookup: {
+                    from: "leads",
+                    localField: "_id",
+                    foreignField: "employeeId",
+                    as: "leads"
+                }
+            },
+            {
+                $addFields: {
+                    ongoingLeads: {
+                        $size: {
+                            $filter: {
+                                input: "$leads",
+                                as: "lead",
+                                cond: { $eq: ["$$lead.status", "ongoing"] }
+                            }
+                        }
+                    },
+                    closedLeads: {
+                        $size: {
+                            $filter: {
+                                input: "$leads",
+                                as: "lead",
+                                cond: { $eq: ["$$lead.status", "closed"] }
+                            }
+                        }
+                    }
+                }
+            },
+
+            // ✅ Only ACTIVE employees
+            {
+                $match: {
+                    ongoingLeads: { $gt: 0 }
+                }
+            },
+
+            // ✅ Add status
+            {
+                $addFields: {
+                    status: "Active"
+                }
+            },
+
+            {
+                $project: {
+                    fname: 1,
+                    lname: 1,
+                    _id: 1,
+                    ongoingLeads: 1,
+                    closedLeads: 1,
+                    status: 1
+                }
+            },
+
+            { $sort: { ongoingLeads: -1 } }
+        ]);
+
+        res.json(employees);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.get("/dashboard/kpi", async (req, res) => {
+    try {
+        const startOfWeek = new Date();
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const unassignedLeads = await Lead.countDocuments({
+            $or: [
+                { employeeId: null },
+                { employeeId: { $exists: false } }
+            ]
+        });
+
+        const assignedThisWeek = await Lead.countDocuments({
+            employeeId: { $ne: null },
+            createdAt: { $gte: startOfWeek }
+        });
+
+        const totalClosed = await Lead.countDocuments({
+            status: "closed"
+        });
+
+        const totalAssigned = await Lead.countDocuments({
+            employeeId: { $ne: null }
+        });
+
+        const activeEmployees = await Lead.distinct("employeeId", {
+            employeeId: { $ne: null },
+            status: "ongoing"
+        });
+
+        const conversionRate =
+            totalAssigned === 0
+                ? 0
+                : ((totalClosed / totalAssigned) * 100).toFixed(2);
+
+        res.json({
+            unassignedLeads,
+            assignedThisWeek,
+            activeSalesPeople: activeEmployees.length,
+            conversionRate
+        });
 
     } catch (err) {
         console.error(err);

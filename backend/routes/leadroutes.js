@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import readline from "readline";
 import Employee from "../models/employee.js";
-
+import mongoose from "mongoose";
 
 
 

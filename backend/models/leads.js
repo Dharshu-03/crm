@@ -23,6 +23,6 @@ const leadsSchema = new mongoose.Schema({
         type: String,
         default: "warm"
     }
-});
+}, { timestamps: true });
 
 export default mongoose.model("Lead", leadsSchema);

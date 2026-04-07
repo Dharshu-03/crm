@@ -274,12 +274,12 @@ const Employee = () => {
                         </div>
 
                         <div className="emppagination">
-                            <div onClick={() => fetchEmployees(page - 1, "")} disabled={page <= 1}>
+                            <div onClick={() => page > 1 && fetchEmployees(page - 1, "")}>
                                 <img src="/images/pre.png" alt="" />
                                 Previous
                             </div>
                             <span>Page {page} of {totalPages}</span>
-                            <div onClick={() => fetchEmployees(page + 1, "")} disabled={page >= totalPages}>
+                            <div onClick={() => page < totalPages && fetchEmployees(page + 1, "")}>
 
                                 Next
                                 <img src="/images/next.png" alt="" />
