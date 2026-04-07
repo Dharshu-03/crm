@@ -292,4 +292,40 @@ router.get("/dashboard/kpi", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+router.get("/dashboard/conversion-trend", async (req, res) => {
+    try {
+        const days = [];
+        for (let i = 13; i >= 0; i--) {
+            const start = new Date();
+            start.setDate(start.getDate() - i);
+            start.setHours(0, 0, 0, 0);
+
+            const end = new Date(start);
+            end.setHours(23, 59, 59, 999);
+
+            const totalAssigned = await Lead.countDocuments({
+                employeeId: { $ne: null },
+                createdAt: { $gte: start, $lte: end }
+            });
+
+            const totalClosed = await Lead.countDocuments({
+                status: "closed",
+                updatedAt: { $gte: start, $lte: end }
+            });
+
+            const rate = totalAssigned === 0 ? 0 : parseFloat(((totalClosed / totalAssigned) * 100).toFixed(2));
+
+            days.push({
+                date: start.toISOString().split("T")[0],
+                rate
+            });
+        }
+
+        res.json(days);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 export default router;

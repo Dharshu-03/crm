@@ -6,7 +6,8 @@ import './dashboard.css'
 import { useEffect } from "react";
 import { useRef } from 'react';
 import API from "../api.js";
-
+import { Chart, registerables } from "chart.js";
+Chart.register(...registerables);
 const Dashboard = () => {
 
     const [search, setSearch] = useState("");
@@ -38,6 +39,71 @@ const Dashboard = () => {
         fetchKPI();
     }, []);
 
+
+    const ConversionGraph = () => {
+        const chartRef = useRef(null);
+        const chartInstance = useRef(null);
+        const [trendData, setTrendData] = useState([]);
+
+        useEffect(() => {
+            API.get("/api/employees/dashboard/conversion-trend")
+                .then(res => setTrendData(res.data))
+                .catch(console.error);
+        }, []);
+
+        useEffect(() => {
+            if (!trendData.length || !chartRef.current) return;
+            if (chartInstance.current) chartInstance.current.destroy();
+
+            const labels = trendData.map(d => {
+                const date = new Date(d.date);
+                return date.toLocaleDateString("en-US", { weekday: "short" });
+            });
+
+            chartInstance.current = new Chart(chartRef.current, {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "Conversion Rate (%)",
+                        data: trendData.map(d => d.rate),
+                        borderColor: "#4f46e5",
+                        backgroundColor: "rgba(79,70,229,0.08)",
+                        pointBackgroundColor: "#4f46e5",
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 60,
+                            ticks: { callback: v => v + "%" }
+                        },
+                        x: {
+                            ticks: { autoSkip: false },
+                            grid: {
+                                display: false   // ✅ removes vertical lines
+                            }
+                        }
+                    }
+                }
+            });
+
+            return () => chartInstance.current?.destroy();
+        }, [trendData]);
+
+        return (
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                <canvas ref={chartRef}></canvas>
+            </div>
+        );
+    };
     const fetchKPI = async () => {
         try {
             const res = await API.get("/api/employees/dashboard/kpi");
@@ -72,11 +138,6 @@ const Dashboard = () => {
                 : part
         );
     };
-
-
-
-
-
 
     const formatDate = (dateStr) => {
         const d = new Date(dateStr);
@@ -128,7 +189,11 @@ const Dashboard = () => {
 
                         </div>
                         <div className="mid">
-                            <div className="graph"></div>
+                            <div className="graph">
+                                <h1>Sale Analytics</h1>
+                                <div><ConversionGraph /></div>
+
+                            </div>
                             <div className="recent"></div>
                         </div>
 
@@ -174,12 +239,6 @@ const Dashboard = () => {
                             )}
 
                         </div>
-
-
-
-
-
-
 
                     </div>
                 </div >

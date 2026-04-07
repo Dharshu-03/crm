@@ -136,6 +136,27 @@
     margin: 20px 40px;
 }
 
+.mid .graph div {
+    width: 798px;
+    height: 231px;
+}
+
+.mid .graph h1 {
+
+    width: 108px;
+    height: 20px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.001em;
+    color: #616161;
+    margin: 10px;
+
+
+}
+
 .mid .recent {
     box-sizing: border-box;
     width: 249px;
