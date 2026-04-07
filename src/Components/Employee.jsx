@@ -182,6 +182,7 @@ const Employee = () => {
                                             <th>Assigned Leads</th>
                                             <th>Closed Leads</th>
                                             <th>status</th>
+                                            <th></th>
 
 
 
@@ -202,60 +203,65 @@ const Employee = () => {
                                                     </td>
                                                     <td>{highlightMatch(employee.fname, search)}  {employee.lname}</td>
                                                     <td > <p className="empid">{employee._id}</p></td>
-                                                    <td>{employee.assignedLeads}</td>
-                                                    <td>-</td>
-                                                    <td>-  <div style={{ position: "relative" }} ref={ellipsisOpenId === employee._id ? ellipsisRef : null}>
-                                                        <button
-                                                            className="ellipsis-btn"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (ellipsisOpenId === employee._id) {
-                                                                    setEllipsisOpenId(null);
+                                                    <td>{employee.ongoingLeads || 0}</td>
+                                                    <td>{employee.closedLeads || 0}</td>
+                                                    <td >  <li className={employee.status === "Active" ? "status-active" : "status-inactive"}>
+                                                        {employee.status}</li>
 
-                                                                } else {
-                                                                    setEllipsisOpenId(employee._id);
+                                                    </td >
+                                                    <td>
+                                                        <div style={{ position: "relative" }} ref={ellipsisOpenId === employee._id ? ellipsisRef : null}>
+                                                            <button
+                                                                className="ellipsis-btn"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (ellipsisOpenId === employee._id) {
+                                                                        setEllipsisOpenId(null);
 
-                                                                }
-                                                            }}
-                                                        >⋮</button>
+                                                                    } else {
+                                                                        setEllipsisOpenId(employee._id);
+
+                                                                    }
+                                                                }}
+                                                            >⋮</button>
 
 
 
-                                                        {/* Paid invoice ellipsis → view/delete only */}
-                                                        {ellipsisOpenId === employee._id && (
-                                                            <div className="ellipsis-popup" onClick={(e) => e.stopPropagation()}>
-                                                                <div className="invoicepop">
+                                                            {/* Paid invoice ellipsis → view/delete only */}
+                                                            {ellipsisOpenId === employee._id && (
+                                                                <div className="ellipsis-popup" onClick={(e) => e.stopPropagation()}>
+                                                                    <div className="invoicepop">
 
-                                                                    <button
-                                                                        className="ellipsis-action-btn"
-                                                                        onClick={() => {
-                                                                            setEllipsisOpenId(null); // close ellipsis
-                                                                            setEditEmployee(employee); // store selected employee
-                                                                            setfname(employee.fname);
-                                                                            setlname(employee.lname);
-                                                                            setEmail(employee.email);
-                                                                            setlocation(employee.location);
-                                                                            setlanguage(employee.language);
-                                                                            setShowEditPopup(true); // open edit popup
-                                                                        }}
-                                                                    >
-                                                                        <img src="/images/edit.png" alt="" />
-                                                                        <p>Edit</p>
-                                                                    </button>
+                                                                        <button
+                                                                            className="ellipsis-action-btn"
+                                                                            onClick={() => {
+                                                                                setEllipsisOpenId(null); // close ellipsis
+                                                                                setEditEmployee(employee); // store selected employee
+                                                                                setfname(employee.fname);
+                                                                                setlname(employee.lname);
+                                                                                setEmail(employee.email);
+                                                                                setlocation(employee.location);
+                                                                                setlanguage(employee.language);
+                                                                                setShowEditPopup(true); // open edit popup
+                                                                            }}
+                                                                        >
+                                                                            <img src="/images/edit.png" alt="" />
+                                                                            <p>Edit</p>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="invoicepop">
+
+                                                                        <button
+                                                                            className="ellipsis-action-btn"
+                                                                            onClick={() => handleDelete(employee._id)}
+                                                                        >
+                                                                            <img src="/images/delete.png" alt="" />
+                                                                            <p>Delete</p>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                                <div className="invoicepop">
-
-                                                                    <button
-                                                                        className="ellipsis-action-btn"
-                                                                        onClick={() => handleDelete(employee._id)}
-                                                                    >
-                                                                        <img src="/images/delete.png" alt="" />
-                                                                        <p>Delete</p>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div></td>
+                                                            )}
+                                                        </div></td>
 
                                                 </tr>
                                             ))

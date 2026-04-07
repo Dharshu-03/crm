@@ -1,0 +1,157 @@
+.dashboard {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(255, 255, 255);
+    height: 100vh;
+}
+
+.dashmain {
+    width: calc(100% - 220px);
+    background-color: #fff;
+}
+
+.dashbeforetab {
+    display: flex;
+    justify-content: space-between;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    width: 388px;
+    height: 44px;
+    background: #ECECEC;
+    border-radius: 16px;
+    margin: 32px 0px 32px 36px;
+
+
+}
+
+.search input {
+    background-color: #ECECEC;
+    border: none;
+    height: 40px;
+}
+
+.search ::placeholder {
+
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.005em;
+    color: #636060;
+}
+
+.search img {
+    height: 32px;
+    width: 32px;
+    margin-left: 3px;
+}
+
+.dashbeforetab h3 {
+    margin: 10px 40px;
+
+    width: 170px;
+    height: 40px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 40px;
+    letter-spacing: -0.0025em;
+    color: #616161;
+}
+
+.dashtab {
+    padding-top: 0px;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 40px 0px 40px;
+}
+
+.innerstat {
+
+    box-sizing: border-box;
+    width: 250px;
+    height: 140px;
+    border: 1px solid #B1B1B1;
+    border-radius: 16px;
+    display: flex;
+
+    align-items: center;
+
+}
+
+.innerstat img {
+    width: 32px;
+    height: 32px;
+    margin-left: 20px;
+}
+
+.innerstat div {
+    margin-left: 10px;
+    margin-top: 15px;
+
+}
+
+.innerstat div p {
+    height: 20px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0.001em;
+    color: #616161;
+}
+
+.innerstat div h4 {
+    height: 20px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 20px;
+    letter-spacing: 0.001em;
+    color: #000000;
+}
+
+.mid {
+    display: flex;
+
+}
+
+.mid .graph {
+
+    box-sizing: border-box;
+    width: 813px;
+    height: 290px;
+    border: 1px solid #B1B1B1;
+    border-radius: 16px;
+    margin: 20px 40px;
+}
+
+.mid .recent {
+    box-sizing: border-box;
+    width: 249px;
+    height: 290px;
+    border: 1px solid #B1B1B1;
+    border-radius: 16px;
+    margin: 20px 40px 20px 0px;
+
+}
+
+.dashbox {
+    box-sizing: border-box;
+    width: 1094px;
+    height: 350px;
+    border: 1px solid #B1B1B1;
+    border-radius: 16px;
+    margin-left: 40px;
+
+}

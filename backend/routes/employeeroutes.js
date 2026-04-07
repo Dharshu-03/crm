@@ -9,24 +9,74 @@ router.post("/add", addEmployee);
 router.get("/", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 9;
+        const limit = 8;
         const skip = (page - 1) * limit;
         const search = req.query.search || "";
 
-        const query = {};
+        const matchStage = {};
 
         if (search.trim()) {
-            query.$or = [
+            matchStage.$or = [
                 { fname: { $regex: search.trim(), $options: "i" } },
                 { lname: { $regex: search.trim(), $options: "i" } }
             ];
         }
 
-        const total = await Employee.countDocuments(query);
-        const employees = await Employee.find(query)
-            .sort({ _id: -1 })
-            .skip(skip)
-            .limit(limit);
+        const total = await Employee.countDocuments(matchStage);
+
+        const employees = await Employee.aggregate([
+            { $match: matchStage },
+
+            // 🔥 Join leads
+            {
+                $lookup: {
+                    from: "leads",
+                    localField: "_id",
+                    foreignField: "employeeId",
+                    as: "leads"
+                }
+            },
+
+            // 🔥 Count ongoing + closed
+            {
+                $addFields: {
+                    ongoingLeads: {
+                        $size: {
+                            $filter: {
+                                input: "$leads",
+                                as: "lead",
+                                cond: { $eq: ["$$lead.status", "ongoing"] }
+                            }
+                        }
+                    },
+                    closedLeads: {
+                        $size: {
+                            $filter: {
+                                input: "$leads",
+                                as: "lead",
+                                cond: { $eq: ["$$lead.status", "closed"] }
+                            }
+                        }
+                    }
+                }
+            },
+
+            {
+                $addFields: {
+                    status: {
+                        $cond: [
+                            { $gt: ["$ongoingLeads", 0] },
+                            "Active",
+                            "Inactive"
+                        ]
+                    }
+                }
+            },
+
+            { $sort: { _id: -1 } },
+            { $skip: skip },
+            { $limit: limit }
+        ]);
 
         res.json({
             employees,
@@ -50,7 +100,7 @@ router.delete("/:id", async (req, res) => {
 
         // 🔥 Check if employee has assigned leads
         const leadCount = await Lead.countDocuments({
-            employeeId: id
+            employeeId: new mongoose.Types.ObjectId(id)
         });
 
         if (leadCount > 0) {

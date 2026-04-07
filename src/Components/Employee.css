@@ -259,9 +259,10 @@ form {
 
 
 
-th {
+.employees-table th {
     height: 44px;
     box-sizing: border-box;
+    padding: 0px;
 }
 
 .employees-table tbody td {
@@ -269,7 +270,13 @@ th {
     text-align: center;
     border: none;
     background-color: #fff;
+    padding: 0px;
+
+
 }
+
+
+
 
 .employees-table tbody tr {
     border: 1px solid #bebebe;
@@ -373,4 +380,36 @@ th {
     color: #00252A;
     margin-left: 10px;
 
+}
+
+.status-active {
+    font-weight: 600;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    color: #027A48;
+    width: 65px;
+    height: 22px;
+    background-color: #e2f2e9;
+    text-align: center;
+    margin-left: 100px;
+}
+
+.status-inactive {
+    font-weight: 600;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    color: #f15046;
+    width: 74px;
+    height: 22px;
+    background-color: #fff2ea;
+    text-align: center;
+    margin-right: 90px;
 }

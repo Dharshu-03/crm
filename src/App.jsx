@@ -1,6 +1,7 @@
 import Setting from './Components/Settings';
 import Employee from './Components/Employee';
 import Lead from './Components/Lead';
+import Dashboard from './Components/Dashboard';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
           <Route path="/settings" element={<Setting />} />
           <Route path="/employee" element={<Employee />}></Route>
           <Route path="/lead" element={<Lead />}></Route>
-        </Routes>
-      </Router>
+          <Route path="/dashboard" element={<Dashboard />}></Route>
+        </Routes >
+      </Router >
     </>
   );
 }
