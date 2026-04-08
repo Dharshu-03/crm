@@ -3,6 +3,7 @@ import fs from "fs";
 
 
 import Employee from "../models/employee.js";
+import logActivity from "../utils/logActivity.js";
 
 
 export const addLead = async (req, res) => {
@@ -20,6 +21,7 @@ export const addLead = async (req, res) => {
         });
 
         res.status(201).json(lead);
+        await logActivity("lead_assigned", `Lead ${lead.name} assigned to employee`);
 
     } catch (err) {
         console.error(err);

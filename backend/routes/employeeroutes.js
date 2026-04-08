@@ -328,4 +328,15 @@ router.get("/dashboard/conversion-trend", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+router.get("/dashboard/recent-activity", async (req, res) => {
+    try {
+        const activities = await Activity.find()
+            .sort({ createdAt: -1 })
+            .limit(7);
+        res.json(activities);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
 export default router;

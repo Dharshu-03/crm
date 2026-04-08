@@ -7,6 +7,7 @@ import path from "path";
 import readline from "readline";
 import Employee from "../models/employee.js";
 import mongoose from "mongoose";
+import logActivity from "../utils/logActivity.js";
 
 
 
@@ -35,9 +36,9 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
 
         const bulkOps = [];
 
-        insertedLeads.forEach(lead => {
+        for (const lead of insertedLeads) {
             const employee = employees.find(emp =>
-                new RegExp(`^${lead.language}$`, "i").test(emp.language)
+                emp.language?.toLowerCase() === lead.language?.toLowerCase()
             );
 
             if (employee) {
@@ -45,10 +46,19 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
                     updateOne: {
                         filter: { _id: lead._id },
                         update: { $set: { employeeId: employee._id } }
+
                     }
                 });
+
+                await logActivity(
+                    "lead_assigned",
+                    `Lead ${lead.name} assigned to ${employee.fname}`
+                )
+
+
             }
-        });
+
+        }
 
         if (bulkOps.length > 0) {
             await Lead.bulkWrite(bulkOps);
@@ -103,7 +113,7 @@ function parseCsvWithStreams(filePath) {
 
                 status: "ongoing",   // ✅ add
                 type: "warm",        // ✅ add
-                employeeId: null     // will assign later
+                employeeId: null   // will assign later
             };
 
             if (!lead.name && !lead.email) return; // skip empty rows

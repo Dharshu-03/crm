@@ -203,3 +203,78 @@
     padding: 0px;
     text-align: center;
 }
+
+
+.recent-feed {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.recent-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 12px 0;
+    color: #111;
+}
+
+.recent-scroll {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+}
+
+.recent-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.recent-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.activity-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.activity-msg {
+    font-size: 13px;
+    color: #111;
+    margin: 0;
+}
+
+.activity-time {
+    font-size: 11px;
+    color: #9ca3af;
+    margin: 0;
+}
+
+.recent-empty {
+    font-size: 13px;
+    color: #9ca3af;
+    text-align: center;
+    padding: 20px 0;
+}

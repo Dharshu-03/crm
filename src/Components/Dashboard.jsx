@@ -104,6 +104,56 @@ const Dashboard = () => {
             </div>
         );
     };
+
+    const RecentActivity = () => {
+        const [activities, setActivities] = useState([]);
+
+        useEffect(() => {
+            API.get("/api/employees/dashboard/recent-activity")
+                .then(res => setActivities(res.data))
+                .catch(console.error);
+        }, []);
+
+        const iconMap = {
+            lead_assigned: { icon: "👤", color: "#4f46e5" },
+            lead_status_updated: { icon: "🔄", color: "#0891b2" },
+            employee_created: { icon: "✅", color: "#16a34a" },
+        };
+
+        const timeAgo = (dateStr) => {
+            const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+            if (diff < 60) return `${diff}s ago`;
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        };
+
+        return (
+            <div className="recent-feed">
+                <p className="recent-title">Recent Activity</p>
+                <div className="recent-scroll">
+                    {activities.length === 0 ? (
+                        <p className="recent-empty">No recent activity</p>
+                    ) : (
+                        activities.map(act => {
+                            const meta = iconMap[act.type] || { icon: "📌", color: "#888" };
+                            return (
+                                <div className="activity-item" key={act._id}>
+                                    <span className="activity-icon" style={{ background: meta.color + "18", color: meta.color }}>
+                                        {meta.icon}
+                                    </span>
+                                    <div className="activity-info">
+                                        <p className="activity-msg">{act.message}</p>
+                                        <p className="activity-time">{timeAgo(act.createdAt)}</p>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </div>
+        );
+    };
     const fetchKPI = async () => {
         try {
             const res = await API.get("/api/employees/dashboard/kpi");
@@ -194,7 +244,9 @@ const Dashboard = () => {
                                 <div><ConversionGraph /></div>
 
                             </div>
-                            <div className="recent"></div>
+                            <div className="recent">
+                                <RecentActivity />
+                            </div>
                         </div>
 
                         <div className="dashbox">
