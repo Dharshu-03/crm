@@ -98,34 +98,6 @@ router.get("/", async (req, res) => {
 
 
 
-router.delete("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // 🔥 Check if employee has assigned leads
-        const leadCount = await Lead.countDocuments({
-            employeeId: new mongoose.Types.ObjectId(id)
-        });
-
-        if (leadCount > 0) {
-            return res.status(400).json({
-                message: "Cannot delete employee with assigned leads"
-            });
-        }
-
-        const deleted = await Employee.findByIdAndDelete(id);
-
-        if (!deleted) {
-            return res.status(404).json({ message: "Employee not found" });
-        }
-
-        res.json({ message: "Employee deleted successfully" });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
 
 router.post("/delete-multiple", async (req, res) => {
     try {
@@ -155,97 +127,7 @@ router.post("/delete-multiple", async (req, res) => {
 });
 
 
-router.put("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
 
-        const updated = await Employee.findByIdAndUpdate(
-            id,
-            req.body,
-            { new: true }
-        );
-
-        if (!updated) {
-            return res.status(404).json({ message: "Employee not found" });
-        }
-
-        res.json(updated);
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-router.get("/active", async (req, res) => {
-    try {
-        const employees = await Employee.aggregate([
-            {
-                $lookup: {
-                    from: "leads",
-                    localField: "_id",
-                    foreignField: "employeeId",
-                    as: "leads"
-                }
-            },
-            {
-                $addFields: {
-                    ongoingLeads: {
-                        $size: {
-                            $filter: {
-                                input: "$leads",
-                                as: "lead",
-                                cond: { $eq: ["$$lead.status", "ongoing"] }
-                            }
-                        }
-                    },
-                    closedLeads: {
-                        $size: {
-                            $filter: {
-                                input: "$leads",
-                                as: "lead",
-                                cond: { $eq: ["$$lead.status", "closed"] }
-                            }
-                        }
-                    }
-                }
-            },
-
-            // ✅ Only ACTIVE employees
-            {
-                $match: {
-                    ongoingLeads: { $gt: 0 }
-                }
-            },
-
-            // ✅ Add status
-            {
-                $addFields: {
-                    status: "Active"
-                }
-            },
-
-            {
-                $project: {
-                    fname: 1,
-                    lname: 1,
-                    _id: 1,
-                    ongoingLeads: 1,
-                    closedLeads: 1,
-                    status: 1
-                }
-            },
-
-            { $sort: { ongoingLeads: -1 } }
-        ]);
-
-        res.json(employees);
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
 
 router.get("/dashboard/kpi", async (req, res) => {
     try {
@@ -344,6 +226,76 @@ router.get("/dashboard/recent-activity", async (req, res) => {
 
 
 
+router.get("/active", async (req, res) => {
+    try {
+        const employees = await Employee.aggregate([
+            {
+                $lookup: {
+                    from: "leads",
+                    localField: "_id",
+                    foreignField: "employeeId",
+                    as: "leads"
+                }
+            },
+            {
+                $addFields: {
+                    ongoingLeads: {
+                        $size: {
+                            $filter: {
+                                input: "$leads",
+                                as: "lead",
+                                cond: { $eq: ["$$lead.status", "ongoing"] }
+                            }
+                        }
+                    },
+                    closedLeads: {
+                        $size: {
+                            $filter: {
+                                input: "$leads",
+                                as: "lead",
+                                cond: { $eq: ["$$lead.status", "closed"] }
+                            }
+                        }
+                    }
+                }
+            },
+
+            // ✅ Only ACTIVE employees
+            {
+                $match: {
+                    ongoingLeads: { $gt: 0 }
+                }
+            },
+
+            // ✅ Add status
+            {
+                $addFields: {
+                    status: "Active"
+                }
+            },
+
+            {
+                $project: {
+                    fname: 1,
+                    lname: 1,
+                    _id: 1,
+                    ongoingLeads: 1,
+                    closedLeads: 1,
+                    status: 1
+                }
+            },
+
+            { $sort: { ongoingLeads: -1 } }
+        ]);
+
+        res.json(employees);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 
 router.post("/login", async (req, res) => {
     try {
@@ -383,4 +335,76 @@ router.post("/login", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+router.get("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const employee = await Employee.findById(id);
+
+        if (!employee) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        res.json(employee);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.put("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updated = await Employee.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        res.json(updated);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 🔥 Check if employee has assigned leads
+        const leadCount = await Lead.countDocuments({
+            employeeId: new mongoose.Types.ObjectId(id)
+        });
+
+        if (leadCount > 0) {
+            return res.status(400).json({
+                message: "Cannot delete employee with assigned leads"
+            });
+        }
+
+        const deleted = await Employee.findByIdAndDelete(id);
+
+        if (!deleted) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        res.json({ message: "Employee deleted successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+// Add this — place it LAST, after all named routes
+
+
 export default router;

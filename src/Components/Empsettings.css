@@ -1,0 +1,120 @@
+.profileheading {
+    width: 100%;
+    height: 130px;
+    background: #2051E5;
+    border-radius: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: left;
+}
+
+.profileheading h1 {
+    height: 28px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 22px;
+
+    color: #FFFFFF;
+}
+
+.profileheading h3 {
+    height: 22px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    display: inline;
+    color: #FFFFFF;
+
+}
+
+.profileheading div {
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-bottom: 20px;
+}
+
+.profileheading p {
+    height: 22px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    display: inline;
+    color: #e8e000;
+
+}
+
+.empsettmain label {
+
+    height: 17px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 16px;
+    color: #5E5E5E;
+    display: block;
+}
+
+.empsettcontent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 311px;
+    margin-top: 30px;
+}
+
+.empsettmain input {
+    box-sizing: border-box;
+    width: 322.21px;
+    height: 33.79px;
+    border: 0.603382px solid #3E3E3E;
+    border-radius: 7.24058px;
+    display: block;
+    padding: 10px;
+
+}
+
+.input-group {
+    margin: 0px;
+}
+
+.svbtn {
+    width: 124px;
+    height: 32.63px;
+    background-color: #2051E5;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11.7474px;
+    line-height: 18px;
+    text-align: center;
+    color: #FFFFFF;
+    border-radius: 9.79px;
+    border: none;
+    margin-top: 103px;
+    margin-left: 50px;
+}
+
+.lgbtn {
+    width: 124px;
+    height: 32.63px;
+    background-color: #E53420;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11.7474px;
+    line-height: 18px;
+    text-align: center;
+    color: #FFFFFF;
+    border-radius: 9.79px;
+    border: none;
+    margin-top: 103px;
+    margin-left: 20px;
+}

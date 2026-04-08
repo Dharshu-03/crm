@@ -3,7 +3,9 @@ import Employee from './Components/Employee';
 import Lead from './Components/Lead';
 import Dashboard from './Components/Dashboard';
 import Emplogin from './Components/Emplogin';
+import Empsettings from './Components/Empsettings';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+
 function App() {
   return (
     <>
@@ -15,6 +17,7 @@ function App() {
           <Route path="/lead" element={<Lead />}></Route>
           <Route path="/dashboard" element={<Dashboard />}></Route>
           <Route path="/login" element={<Emplogin />}></Route>
+          <Route path="/empsettings" element={<Empsettings />}></Route>
         </Routes >
       </Router >
     </>

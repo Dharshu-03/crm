@@ -20,11 +20,13 @@ const Emplogin = () => {
             console.log("LOGIN SUCCESS:", res.data);
 
             // ✅ store token (if you implement JWT)
-            localStorage.setItem("token", res.data.token);
 
+            // 🔥 THIS IS THE MISSING PART
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("employeeId", res.data.employee.id);
             alert("Login successful");
 
-            navigate("/dashboard");  // redirect
+            navigate("/empsettings");  // redirect
 
         } catch (err) {
             console.error(err);
