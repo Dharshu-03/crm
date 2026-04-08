@@ -329,7 +329,7 @@ router.get("/dashboard/conversion-trend", async (req, res) => {
     }
 });
 
-router.get("/dashboard/recent-activity", async (req, res) => {
+router.get("employee/dashboard/recent-activity", async (req, res) => {
     try {
         const activities = await Activity.find()
             .sort({ createdAt: -1 })

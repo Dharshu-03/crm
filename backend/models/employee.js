@@ -5,7 +5,12 @@ const employeeSchema = mongoose.Schema({
     lname: { type: String, required: true },
     email: { type: String, unique: true },
     location: { type: String, required: true },
-    language: { type: String, required: true }
+    language: { type: String, required: true },
+    password: {
+        type: String,
+        required: true
+    }
+
 });
 
 export default mongoose.model("Employee", employeeSchema);

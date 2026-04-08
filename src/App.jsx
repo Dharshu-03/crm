@@ -2,6 +2,7 @@ import Setting from './Components/Settings';
 import Employee from './Components/Employee';
 import Lead from './Components/Lead';
 import Dashboard from './Components/Dashboard';
+import Emplogin from './Components/Emplogin';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/employee" element={<Employee />}></Route>
           <Route path="/lead" element={<Lead />}></Route>
           <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/login" element={<Emplogin />}></Route>
         </Routes >
       </Router >
     </>

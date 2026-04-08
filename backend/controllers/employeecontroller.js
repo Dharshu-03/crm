@@ -1,24 +1,42 @@
 import Employee from "../models/employee.js";
 import Lead from "../models/leads.js";
 import logActivity from "../utils/logActivity.js";
-
+import bcrypt from "bcrypt";
 
 export const addEmployee = async (req, res) => {
     try {
-        const employee = await Employee.create(req.body);
+        const { fname, lname, email, location, language } = req.body;
 
-        // 🔥 assign all unassigned leads
+        // 🔥 hash email as password
+        const hashedPassword = await bcrypt.hash(email, 10);
+
+        const employee = await Employee.create({
+            fname,
+            lname,
+            email,
+            location,
+            language,
+            password: hashedPassword
+        });
+
+        // assign leads
         await Lead.updateMany(
             {
-                language: { $regex: `^${employee.language}$`, $options: "i" },
+                language: { $regex: `^${language}$`, $options: "i" },
                 employeeId: null
             },
             {
                 $set: { employeeId: employee._id }
             }
         );
-        await logActivity("employee_created", `Employee ${employee.fname} ${employee.lname} was added`);
-        res.status(201).json(employee);
+
+        await logActivity(
+            "employee_created",
+            `Employee ${fname} ${lname} was added`
+        );
+
+        const { password, ...safeEmployee } = employee.toObject();
+        res.status(201).json(safeEmployee);
 
     } catch (err) {
         console.error(err);
