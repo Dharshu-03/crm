@@ -5,6 +5,9 @@ import { addEmployee } from "../controllers/employeecontroller.js";
 import Lead from "../models/leads.js";
 const router = express.Router();
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import Activity from "../models/activity.js";
 
 router.post("/add", addEmployee);
 router.get("/", async (req, res) => {
@@ -329,13 +332,54 @@ router.get("/dashboard/conversion-trend", async (req, res) => {
     }
 });
 
-router.get("employee/dashboard/recent-activity", async (req, res) => {
+router.get("/dashboard/recent-activity", async (req, res) => {
     try {
         const activities = await Activity.find()
-            .sort({ createdAt: -1 })
-            .limit(7);
+            .sort({ createdAt: -1 });
         res.json(activities);
     } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+
+
+router.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const employee = await Employee.findOne({ email });
+
+        if (!employee) {
+            return res.status(400).json({ message: "Invalid email" });
+        }
+
+        const isMatch = await bcrypt.compare(password, employee.password);
+
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid password" });
+        }
+
+        // 🔥 create token
+        const token = jwt.sign(
+            { id: employee._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        res.json({
+            message: "Login successful",
+            token,
+            employee: {
+                id: employee._id,
+                fname: employee.fname,
+                lname: employee.lname
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
