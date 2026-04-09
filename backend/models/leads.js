@@ -22,6 +22,10 @@ const leadsSchema = new mongoose.Schema({
     type: {
         type: String,
         default: "warm"
+    },
+    assignedDate: {
+        type: Date,
+        default: Date.now
     }
 }, { timestamps: true });
 

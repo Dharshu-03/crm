@@ -17,11 +17,20 @@ export const addLead = async (req, res) => {
 
         const lead = await Lead.create({
             ...leadData,
-            employeeId: employee ? employee._id : null
+
+            // ✅ assign employee
+            employeeId: employee ? employee._id : null,
+
+            // ✅ ADD THIS 👇
+            assignedDate: employee ? new Date() : null
         });
 
         res.status(201).json(lead);
-        await logActivity("lead_assigned", `Lead ${lead.name} assigned to employee`);
+
+        await logActivity(
+            "lead_assigned",
+            `Lead ${lead.name} assigned to employee`
+        );
 
     } catch (err) {
         console.error(err);

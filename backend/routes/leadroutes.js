@@ -3,18 +3,16 @@ import multer from "multer";
 import Lead from "../models/leads.js";
 import { addLead } from "../controllers/leadcontroller.js";
 import fs from "fs";
-import path from "path";
 import readline from "readline";
 import Employee from "../models/employee.js";
-import mongoose from "mongoose";
 import logActivity from "../utils/logActivity.js";
 
-
-
 const router = express.Router();
-// Multer config — saves uploaded CSV to /tmp
+
+// Multer config
 const upload = multer({ dest: "/tmp/" });
 
+/* ================= CSV UPLOAD ================= */
 router.post("/upload-csv", upload.single("csv"), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
@@ -26,46 +24,48 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
         const leads = await parseCsvWithStreams(filePath);
 
         if (leads.length === 0) {
-            return res.status(400).json({ error: "CSV is empty or has no valid rows" });
+            return res.status(400).json({ error: "CSV is empty or invalid" });
         }
 
-        const result = await Lead.insertMany(leads, { ordered: false });
-        const insertedLeads = result;
+        const insertedLeads = await Lead.insertMany(leads, { ordered: false });
 
         const employees = await Employee.find();
-
         const bulkOps = [];
 
         for (const lead of insertedLeads) {
-            const employee = employees.find(emp =>
-                emp.language?.toLowerCase() === lead.language?.toLowerCase()
+            const employee = employees.find(
+                (emp) =>
+                    emp.language?.toLowerCase() ===
+                    lead.language?.toLowerCase()
             );
 
             if (employee) {
                 bulkOps.push({
                     updateOne: {
                         filter: { _id: lead._id },
-                        update: { $set: { employeeId: employee._id } }
-
-                    }
+                        update: {
+                            $set: {
+                                employeeId: employee._id,
+                                assignedDate: new Date(), // ✅ FIX
+                            },
+                        },
+                    },
                 });
 
                 await logActivity(
                     "lead_assigned",
                     `Lead ${lead.name} assigned to ${employee.fname}`
-                )
-
-
+                );
             }
-
         }
 
         if (bulkOps.length > 0) {
             await Lead.bulkWrite(bulkOps);
         }
+
         res.json({
-            message: `${result.length} leads imported successfully`,
-            count: result.length,
+            message: `${insertedLeads.length} leads imported successfully`,
+            count: insertedLeads.length,
         });
     } catch (err) {
         console.error("CSV upload error:", err);
@@ -75,6 +75,7 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
     }
 });
 
+/* ================= CSV PARSER ================= */
 function parseCsvWithStreams(filePath) {
     return new Promise((resolve, reject) => {
         const results = [];
@@ -84,12 +85,12 @@ function parseCsvWithStreams(filePath) {
 
         const rl = readline.createInterface({
             input: fileStream,
-            crlfDelay: Infinity, // handles Windows \r\n line endings
+            crlfDelay: Infinity,
         });
 
         rl.on("line", (line) => {
             const trimmed = line.trim();
-            if (!trimmed) return; // skip blank lines
+            if (!trimmed) return;
 
             const cols = splitCsvLine(trimmed);
 
@@ -110,13 +111,13 @@ function parseCsvWithStreams(filePath) {
                 date: row.date ? new Date(row.date) : null,
                 location: row.location || "",
                 language: row.language || "",
-
-                status: "ongoing",   // ✅ add
-                type: "warm",        // ✅ add
-                employeeId: null   // will assign later
+                status: "ongoing",
+                type: "warm",
+                employeeId: null,
+                assignedDate: null, // will be set later
             };
 
-            if (!lead.name && !lead.email) return; // skip empty rows
+            if (!lead.name && !lead.email) return;
 
             results.push(lead);
         });
@@ -127,6 +128,7 @@ function parseCsvWithStreams(filePath) {
     });
 }
 
+/* ================= CSV SPLIT ================= */
 function splitCsvLine(line) {
     const cols = [];
     let current = "";
@@ -138,7 +140,7 @@ function splitCsvLine(line) {
         if (ch === '"') {
             if (inQuotes && line[i + 1] === '"') {
                 current += '"';
-                i++; // skip escaped quote
+                i++;
             } else {
                 inQuotes = !inQuotes;
             }
@@ -150,14 +152,14 @@ function splitCsvLine(line) {
         }
     }
 
-    cols.push(current); // push last field
+    cols.push(current);
     return cols;
 }
 
-
-
+/* ================= ADD LEAD ================= */
 router.post("/add", addLead);
 
+/* ================= GET ALL LEADS ================= */
 router.get("/", async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -172,6 +174,7 @@ router.get("/", async (req, res) => {
         }
 
         const total = await Lead.countDocuments(query);
+
         const leads = await Lead.find(query)
             .sort({ _id: -1 })
             .skip(skip)
@@ -181,12 +184,24 @@ router.get("/", async (req, res) => {
             leads,
             total,
             page,
-            totalPages: Math.ceil(total / limit)
+            totalPages: Math.ceil(total / limit),
         });
-
     } catch (err) {
-        console.log(err);
         res.status(500).json({ error: err.message });
+    }
+});
+
+/* ================= EMPLOYEE LEADS ================= */
+router.get("/my-leads/:employeeId", async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+
+        const leads = await Lead.find({ employeeId: employeeId })
+            .sort({ assignedDate: -1 }); // latest first
+
+        res.status(200).json(leads);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 

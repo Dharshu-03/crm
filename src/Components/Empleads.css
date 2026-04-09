@@ -1,0 +1,206 @@
+.leadheading {
+    width: 100%;
+    height: 130px;
+    background: #2051E5;
+    border-radius: 0px 0px 19.0179px 19.0179px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: left;
+}
+
+.leadheading h1 {
+    height: 28px;
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 22px;
+
+    color: #FFFFFF;
+}
+
+.leadheading h3 {
+    height: 22px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    display: inline;
+    color: #FFFFFF;
+
+}
+
+.leadheading div {
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-bottom: 20px;
+}
+
+.leadheading p {
+    height: 22px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    display: inline;
+    color: #e8e000;
+
+}
+
+.empleadmain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.empleadsearch {
+    display: flex;
+    width: 345px;
+    height: 40px;
+    background: #D9D9D9;
+    border-radius: 13px;
+    align-items: center;
+    margin-top: 21px;
+}
+
+.empleadsearch img {
+    height: 24px;
+    width: 24px;
+    margin-left: 15px;
+}
+
+.empleadsearch input {
+    background: #D9D9D9;
+    border: none;
+    width: 100%;
+}
+
+.lc {
+    box-sizing: border-box;
+    width: 347px;
+    height: 160px;
+    background-color: #eeeeee;
+    border-radius: 13px;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px 10px 0px;
+    margin-top: 20px;
+}
+
+.lc .info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.lc .info div {
+    padding-left: 10px;
+}
+
+.lc .info div h1 {
+
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #101828;
+}
+
+.lc .info div p {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #bdc2ca;
+}
+
+.lc .info div img {
+    display: inline;
+}
+
+.lc .info div h3 {
+    display: inline;
+    position: absolute;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #445668;
+    margin-left: 5px;
+}
+
+
+.lc .buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.lc .buttons .dummy {
+    display: flex;
+    justify-content: space-between;
+}
+
+.lc .buttons .dummy .lcbtn {
+    margin: 0px 10px;
+}
+
+.ring {
+    width: 79px;
+    height: 79px;
+    border: 10px solid #3498db;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #101828;
+    text-transform: capitalize;
+}
+
+.hot {
+    color: #F77307;
+    border-color: #F77307;
+}
+
+.warm {
+    color: #F7D307;
+    border-color: #F7D307;
+}
+
+.cold {
+    color: #07EFF7;
+    border-color: #07EFF7;
+}
+
+.lc .info .hot {
+    border-left: 4px solid #F77307;
+}
+
+.lc .info .warm {
+    border-left: 4px solid #F7D307;
+}
+
+.lc .info .cold {
+    border-left: 4px solid #07EFF7;
+}
+
+.hot>.text,
+.warm>.text,
+.cold>.text {
+    color: #000;
+}
