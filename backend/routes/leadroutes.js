@@ -191,7 +191,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-/* ================= EMPLOYEE LEADS ================= */
+
 router.get("/my-leads/:employeeId", async (req, res) => {
     try {
         const { employeeId } = req.params;
@@ -202,6 +202,22 @@ router.get("/my-leads/:employeeId", async (req, res) => {
         res.status(200).json(leads);
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+});
+
+router.put("/update-type/:id", async (req, res) => {
+    try {
+        const { type } = req.body;
+
+        const updatedLead = await Lead.findByIdAndUpdate(
+            req.params.id,
+            { type },
+            { new: true }
+        );
+
+        res.json(updatedLead);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

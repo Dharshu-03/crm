@@ -204,3 +204,104 @@
 .cold>.text {
     color: #000;
 }
+
+/* 🔥 Dark background */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+/* 🔥 Popup */
+.type-popup {
+    position: absolute;
+
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    height: 157px;
+    width: 65px;
+    border: 1px solid #b3b3b3;
+}
+
+.type-popup div {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.type-popup div:hover {
+    background: #eee;
+}
+
+
+
+.type-popup .btn1 {
+    width: 53px;
+    height: 26px;
+    background: #F77307;
+    border-radius: 5px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.type-popup .btn2 {
+
+    width: 53px;
+    height: 26px;
+    background: #F7D307;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.type-popup .btn3 {
+    width: 53px;
+    height: 26px;
+    background: #07EFF7;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #101828;
+}
+
+.type-popup h3 {
+    width: 34px;
+    height: 18px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 18px;
+    color: #42526D;
+}
