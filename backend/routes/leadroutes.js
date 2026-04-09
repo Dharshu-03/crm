@@ -221,4 +221,36 @@ router.put("/update-type/:id", async (req, res) => {
     }
 });
 
+router.put("/update-schedule/:id", async (req, res) => {
+    try {
+        const { scheduledDate } = req.body;
+
+        const lead = await Lead.findByIdAndUpdate(
+            req.params.id,
+            { scheduledDate },
+            { new: true }
+        );
+
+        res.json(lead);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.put("/update-status/:id", async (req, res) => {
+    try {
+        const { status } = req.body;
+
+        const lead = await Lead.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+
+        res.json(lead);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default router;

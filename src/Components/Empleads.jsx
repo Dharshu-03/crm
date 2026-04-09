@@ -8,6 +8,18 @@ const Empleads = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
     const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
+    const [showSchedulePopup, setShowSchedulePopup] = useState(false);
+    const [scheduleLead, setScheduleLead] = useState(null);
+    const [scheduleData, setScheduleData] = useState({
+        date: "",
+        time: ""
+    });
+    const [showStatusPopup, setShowStatusPopup] = useState(false);
+    const [statusLead, setStatusLead] = useState(null);
+    const [status, setStatus] = useState("");
+
+    const [showInfoPopup, setShowInfoPopup] = useState(false);
+    const [infoPos, setInfoPos] = useState({ x: 0, y: 0 });
     useEffect(() => {
         const fetchLeads = async () => {
             try {
@@ -24,6 +36,53 @@ const Empleads = () => {
         fetchLeads();
     }, []);
 
+    const updateStatus = async () => {
+        try {
+            await API.put(`/api/leads/update-status/${statusLead._id}`, {
+                status
+            });
+
+            // update UI
+            setLeads((prev) =>
+                prev.map((l) =>
+                    l._id === statusLead._id ? { ...l, status } : l
+                )
+            );
+
+            setShowStatusPopup(false);
+            setShowInfoPopup(false);
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    const saveSchedule = async () => {
+        try {
+            const { date, time } = scheduleData;
+
+            // combine date + time
+            const scheduledDate = new Date(`${date}T${time}`);
+
+            await API.put(`/api/leads/update-schedule/${scheduleLead._id}`, {
+                scheduledDate
+            });
+
+            // update UI instantly
+            setLeads((prev) =>
+                prev.map((l) =>
+                    l._id === scheduleLead._id
+                        ? { ...l, scheduledDate }
+                        : l
+                )
+            );
+
+            setShowSchedulePopup(false);
+            setScheduleData({ date: "", time: "" });
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
     const updateType = async (type) => {
         try {
             await API.put(`/api/leads/update-type/${selectedLead._id}`, {
@@ -89,10 +148,31 @@ const Empleads = () => {
                                     }}>
                                         <img src="/images/lc1.png" alt="" />
                                     </div>
-                                    <div className="lcbtn">
+                                    <div className="lcbtn" onClick={(e) => {
+                                        const rect = e.target.getBoundingClientRect();
+
+                                        setScheduleLead(lead);
+                                        setShowSchedulePopup(true);
+
+                                        setPopupPos({
+                                            x: rect.left,
+                                            y: rect.bottom
+                                        });
+                                    }}>
                                         <img src="/images/lc2.png" alt="" />
                                     </div>
-                                    <div className="lcbtn">
+                                    <div className="lcbtn" onClick={(e) => {
+                                        const rect = e.target.getBoundingClientRect();
+
+                                        setStatusLead(lead);
+                                        setShowStatusPopup(true);
+                                        setStatus(lead.status);
+
+                                        setPopupPos({
+                                            x: rect.left,
+                                            y: rect.bottom
+                                        });
+                                    }}>
                                         <img src="/images/lc3.png" alt="" />
                                     </div>
                                 </div>
@@ -127,6 +207,121 @@ const Empleads = () => {
                     </>
                 )
             }
+
+            {showSchedulePopup && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="overlay"
+                        onClick={() => setShowSchedulePopup(false)}
+                    ></div>
+
+                    {/* Popup */}
+                    <div
+                        className="schedule-popup"
+                        style={{
+                            position: "absolute",
+                            top: popupPos.y - 10,
+                            left: popupPos.x - 150,
+                            zIndex: 20
+                        }}
+                    >
+                        <h3>Date</h3>
+
+                        <input
+                            type="date"
+                            value={scheduleData.date}
+                            onChange={(e) =>
+                                setScheduleData({ ...scheduleData, date: e.target.value })
+                            }
+                        />
+                        <h3>Time</h3>
+                        <input
+                            type="time"
+                            value={scheduleData.time}
+                            onChange={(e) =>
+                                setScheduleData({ ...scheduleData, time: e.target.value })
+                            }
+                        />
+
+                        <button onClick={saveSchedule}>Save</button>
+                    </div>
+                </>
+            )}
+            {showStatusPopup && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="overlay"
+                        onClick={() => {
+                            setShowStatusPopup(false);
+                            setShowInfoPopup(false);
+                        }}
+                    ></div>
+
+                    {/* Main Popup */}
+                    <div
+                        className="status-popup"
+                        style={{
+                            position: "absolute",
+                            top: popupPos.y,
+                            left: popupPos.x - 300,
+                            zIndex: 20
+                        }}
+                    >
+                        <div className='heading'>
+                            <h3>Lead Status</h3>
+                            <button
+                                className="info-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+
+                                    const rect = e.target.getBoundingClientRect();
+
+                                    setInfoPos({
+                                        x: rect.right,
+                                        y: rect.top
+                                    });
+
+                                    setShowInfoPopup(true);
+                                }}
+                            >
+                                <img src="/images/info.png" alt="" />
+                            </button>
+                        </div>
+                        <div className="status-row">
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                            >
+                                <option value="ongoing">Ongoing</option>
+                                <option value="closed">Closed</option>
+                            </select>
+
+
+
+                        </div>
+
+                        <button onClick={updateStatus}>Save</button>
+                    </div>
+
+                    {/* ℹ️ Info Popup (separate) */}
+                    {showInfoPopup && (
+                        <div
+                            className="info-popup"
+                            style={{
+                                position: "absolute",
+                                top: infoPos.y,
+                                left: infoPos.x,
+                                zIndex: 30
+                            }}
+                        >
+                            <p>Ongoing → Active lead</p>
+                            <p>Closed → Completed lead</p>
+                        </div>
+                    )}
+                </>
+            )}
         </div>
 
     )

@@ -26,6 +26,9 @@ const leadsSchema = new mongoose.Schema({
     assignedDate: {
         type: Date,
         default: Date.now
+    },
+    scheduledDate: {
+        type: Date
     }
 }, { timestamps: true });
 
