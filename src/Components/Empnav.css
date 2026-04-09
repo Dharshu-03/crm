@@ -17,7 +17,7 @@
     cursor: pointer;
 }
 
-.active {
+.active p {
     color: #2051e5;
 }
 
