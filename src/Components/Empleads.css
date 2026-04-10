@@ -76,6 +76,8 @@
     background: #D9D9D9;
     border: none;
     width: 100%;
+    outline: none;
+    margin-left: 5px;
 }
 
 .lc {
@@ -364,16 +366,43 @@
     background: white;
     padding: 15px;
     border-radius: 10px;
-    width: 220px;
+    height: 121px;
+    width: 153px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.status-row {
+.status-popup .save {
+    /* Frame 1171274818 */
+
+    /* Auto layout */
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
+    padding: 8px 50px;
+    width: 109px;
+    height: 34px;
+    background: #363636;
+    border-radius: 15px;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    color: #FAFBFC;
+}
+
+.status-row select {
+    box-sizing: border-box;
+    width: 123px;
+    height: 33px;
+    background: #FFFFFF;
+    border: 1.60853px solid #C8C8C8;
+    border-radius: 5px;
+
 }
 
 .info-btn {
@@ -384,15 +413,30 @@
 }
 
 .info-popup {
-    background: #333;
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    width: 160px;
+    background: #fff;
+    width: 254px;
+    height: 46px;
+    font-family: 'Helvetica';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    color: #7C7C7C;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .status-popup .heading {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.lcbtn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    /* 🔥 disables click completely */
+    cursor: not-allowed;
 }

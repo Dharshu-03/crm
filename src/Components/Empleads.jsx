@@ -17,6 +17,7 @@ const Empleads = () => {
     const [showStatusPopup, setShowStatusPopup] = useState(false);
     const [statusLead, setStatusLead] = useState(null);
     const [status, setStatus] = useState("");
+    const [search, setSearch] = useState("");
 
     const [showInfoPopup, setShowInfoPopup] = useState(false);
     const [infoPos, setInfoPos] = useState({ x: 0, y: 0 });
@@ -60,14 +61,12 @@ const Empleads = () => {
         try {
             const { date, time } = scheduleData;
 
-            // combine date + time
             const scheduledDate = new Date(`${date}T${time}`);
 
             await API.put(`/api/leads/update-schedule/${scheduleLead._id}`, {
                 scheduledDate
             });
 
-            // update UI instantly
             setLeads((prev) =>
                 prev.map((l) =>
                     l._id === scheduleLead._id
@@ -89,7 +88,7 @@ const Empleads = () => {
                 type
             });
 
-            // ✅ Update UI instantly
+
             setLeads((prev) =>
                 prev.map((l) =>
                     l._id === selectedLead._id ? { ...l, type } : l
@@ -101,6 +100,9 @@ const Empleads = () => {
             console.error(err);
         }
     };
+    const filteredLeads = leads.filter((lead) =>
+        (lead.name || "").toLowerCase().includes(search.toLowerCase())
+    );
     return (
         <div>
             <div className="leadheading">
@@ -116,69 +118,100 @@ const Empleads = () => {
 
                 <div className="empleadsearch">
                     <img src="/images/search.png" alt="" />
-                    <input type="text" />
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
                 </div>
 
                 <div className="leadcards">
 
 
-                    {leads.map((lead) => (
-
-                        <div className="lc" key={lead._id}>
-                            <div className="info">
-                                <div className={`imp ${lead.type}`}>
-                                    <h1>{lead.name}</h1>
-                                    <p>{lead.email}</p>
+                    {filteredLeads.length === 0 ? (
+                        <p style={{ margin: "20px" }}>No matching leads</p>
+                    ) : (
+                        filteredLeads.map((lead) => (
+                            <div className="lc" key={lead._id}>
+                                <div className="info">
+                                    <div className={`imp ${lead.type}`}>
+                                        <h1>{lead.name}</h1>
+                                        <p>{lead.email}</p>
+                                    </div>
+                                    <div>
+                                        <img src="/images/calendar.png" alt="" />
+                                        <h3>
+                                            {new Date(lead.assignedDate).toLocaleDateString("en-US", {
+                                                month: "long",
+                                                day: "numeric",
+                                                year: "numeric"
+                                            })}
+                                        </h3>
+                                    </div>
                                 </div>
-                                <div>
-                                    <img src="/images/calendar.png" alt="" />
-                                    <h3>{new Date(lead.assignedDate).toLocaleDateString()}</h3>
+
+                                <div className="buttons">
+                                    <div className={`ring ${lead.type}`}>
+                                        <span className="text">{lead.status}</span>
+                                    </div>
+
+                                    <div className='dummy'>
+                                        <div
+                                            className={`lcbtn ${lead.status === "closed" ? "disabled" : ""}`}
+                                            onClick={(e) => {
+                                                if (lead.status === "closed") return;
+                                                setSelectedLead(lead);
+                                                setShowPopup(true);
+                                                setPopupPos({ x: e.clientX, y: e.clientY });
+                                            }}
+                                        >
+                                            <img src="/images/lc1.png" alt="" />
+                                        </div>
+
+                                        <div
+                                            className={`lcbtn ${lead.status === "closed" ? "disabled" : ""}`}
+                                            onClick={(e) => {
+                                                if (lead.status === "closed") return;
+
+                                                const rect = e.currentTarget.getBoundingClientRect();
+
+                                                setScheduleLead(lead);
+                                                setShowSchedulePopup(true);
+
+                                                setPopupPos({
+                                                    x: rect.left,
+                                                    y: rect.bottom
+                                                });
+                                            }}
+                                        >
+                                            <img src="/images/lc2.png" alt="" />
+                                        </div>
+
+                                        <div
+                                            className={`lcbtn ${lead.status === "closed" ? "disabled" : ""}`}
+                                            onClick={(e) => {
+                                                if (lead.status === "closed") return;
+
+                                                const rect = e.target.getBoundingClientRect();
+
+                                                setStatusLead(lead);
+                                                setShowStatusPopup(true);
+                                                setStatus(lead.status);
+
+                                                setPopupPos({
+                                                    x: rect.left,
+                                                    y: rect.bottom
+                                                });
+                                            }}
+                                        >
+                                            <img src="/images/lc3.png" alt="" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="buttons">
-                                <div className={`ring ${lead.type}`}>
-                                    <span className="text">{lead.status}</span>
-                                </div>
-
-                                <div className='dummy'>
-                                    <div className="lcbtn" onClick={(e) => {
-                                        setSelectedLead(lead);
-                                        setShowPopup(true);
-                                        setPopupPos({ x: e.clientX, y: e.clientY })
-                                    }}>
-                                        <img src="/images/lc1.png" alt="" />
-                                    </div>
-                                    <div className="lcbtn" onClick={(e) => {
-                                        const rect = e.target.getBoundingClientRect();
-
-                                        setScheduleLead(lead);
-                                        setShowSchedulePopup(true);
-
-                                        setPopupPos({
-                                            x: rect.left,
-                                            y: rect.bottom
-                                        });
-                                    }}>
-                                        <img src="/images/lc2.png" alt="" />
-                                    </div>
-                                    <div className="lcbtn" onClick={(e) => {
-                                        const rect = e.target.getBoundingClientRect();
-
-                                        setStatusLead(lead);
-                                        setShowStatusPopup(true);
-                                        setStatus(lead.status);
-
-                                        setPopupPos({
-                                            x: rect.left,
-                                            y: rect.bottom
-                                        });
-                                    }}>
-                                        <img src="/images/lc3.png" alt="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </div>
 
@@ -265,7 +298,7 @@ const Empleads = () => {
                         style={{
                             position: "absolute",
                             top: popupPos.y,
-                            left: popupPos.x - 300,
+                            left: popupPos.x - 230,
                             zIndex: 20
                         }}
                     >
@@ -302,7 +335,7 @@ const Empleads = () => {
 
                         </div>
 
-                        <button onClick={updateStatus}>Save</button>
+                        <button className='save' onClick={updateStatus}>Save</button>
                     </div>
 
                     {/* ℹ️ Info Popup (separate) */}
@@ -311,13 +344,13 @@ const Empleads = () => {
                             className="info-popup"
                             style={{
                                 position: "absolute",
-                                top: infoPos.y,
-                                left: infoPos.x,
+                                top: infoPos.y - 70,
+                                left: infoPos.x - 200,
                                 zIndex: 30
                             }}
                         >
-                            <p>Ongoing → Active lead</p>
-                            <p>Closed → Completed lead</p>
+                            <p>Lead can not be closed if scheduled</p>
+
                         </div>
                     )}
                 </>
