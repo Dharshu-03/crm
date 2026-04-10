@@ -115,7 +115,6 @@ const Empleads = () => {
                 </div>
             </div>
             <div className='empleadmain'>
-
                 <div className="empleadsearch">
                     <img src="/images/search.png" alt="" />
                     <input

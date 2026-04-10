@@ -253,4 +253,19 @@ router.put("/update-status/:id", async (req, res) => {
     }
 });
 
+router.get("/my-schedules", async (req, res) => {
+    try {
+        const employeeId = req.query.employeeId;
+
+        const schedules = await Lead.find({
+            employeeId: employeeId,
+            scheduledDate: { $ne: null }
+        });
+
+        res.json(schedules);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch schedules" });
+    }
+});
+
 export default router;

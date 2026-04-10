@@ -207,7 +207,6 @@
     color: #000;
 }
 
-/* 🔥 Dark background */
 .overlay {
     position: fixed;
     top: 0;
@@ -218,7 +217,7 @@
     z-index: 10;
 }
 
-/* 🔥 Popup */
+
 .type-popup {
     position: absolute;
 
@@ -437,6 +436,6 @@
 .lcbtn.disabled {
     opacity: 0.5;
     pointer-events: none;
-    /* 🔥 disables click completely */
+
     cursor: not-allowed;
 }
