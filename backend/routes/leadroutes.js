@@ -7,6 +7,7 @@ import readline from "readline";
 import Employee from "../models/employee.js";
 import logActivity from "../utils/logActivity.js";
 
+
 const router = express.Router();
 
 // Multer config
@@ -221,29 +222,48 @@ router.put("/update-type/:id", async (req, res) => {
     }
 });
 
+
+
+router.put("/update-status/:id", async (req, res) => {
+    try {
+        const lead = await Lead.findById(req.params.id);
+
+        if (!lead) return res.status(404).json({ error: "Not found" });
+
+
+        if (req.body.status === "closed" && lead.scheduledDate) {
+            return res.status(400).json({
+                error: "Lead will be auto-closed on scheduled time"
+            });
+        }
+
+        lead.status = req.body.status;
+        await lead.save();
+
+        res.json(lead);
+
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 router.put("/update-schedule/:id", async (req, res) => {
     try {
         const { scheduledDate } = req.body;
 
-        const lead = await Lead.findByIdAndUpdate(
-            req.params.id,
-            { scheduledDate },
-            { new: true }
-        );
-
-        res.json(lead);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-router.put("/update-status/:id", async (req, res) => {
-    try {
-        const { status } = req.body;
+        // ❗ prevent past scheduling
+        if (new Date(scheduledDate) <= new Date()) {
+            return res.status(400).json({
+                error: "Scheduled time must be in the future"
+            });
+        }
 
         const lead = await Lead.findByIdAndUpdate(
             req.params.id,
-            { status },
+            {
+                scheduledDate,
+                status: "ongoing" // reset status when scheduling
+            },
             { new: true }
         );
 
@@ -256,11 +276,23 @@ router.put("/update-status/:id", async (req, res) => {
 router.get("/my-schedules", async (req, res) => {
     try {
         const employeeId = req.query.employeeId;
+        const now = new Date();
+
+        // ✅ auto-close expired leads
+        await Lead.updateMany(
+            {
+                scheduledDate: { $lte: now },
+                status: { $ne: "closed" }
+            },
+            {
+                $set: { status: "closed" }
+            }
+        );
 
         const schedules = await Lead.find({
-            employeeId: employeeId,
-            scheduledDate: { $ne: null }
-        });
+            employeeId,
+            scheduledDate: { $gte: now }
+        }).sort({ scheduledDate: 1 });
 
         res.json(schedules);
     } catch (err) {

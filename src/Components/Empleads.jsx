@@ -276,7 +276,12 @@ const Empleads = () => {
                             }
                         />
 
-                        <button onClick={saveSchedule}>Save</button>
+                        <button
+                            onClick={saveSchedule}
+                            disabled={!!scheduleLead?.scheduledDate}
+                        >
+                            Save
+                        </button>
                     </div>
                 </>
             )}
@@ -327,7 +332,7 @@ const Empleads = () => {
                                 onChange={(e) => setStatus(e.target.value)}
                             >
                                 <option value="ongoing">Ongoing</option>
-                                <option value="closed">Closed</option>
+                                <option value="closed" disabled={!!statusLead?.scheduledDate}>Closed</option>
                             </select>
 
 
