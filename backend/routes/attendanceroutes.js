@@ -4,7 +4,12 @@ import Attendance from "../models/attendance.js";
 const router = express.Router();
 
 // helper → today's date
-const getToday = () => new Date().toISOString().split("T")[0];
+const getToday = () => {
+    const now = new Date();
+    return now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0");
+};
 router.post("/check-in", async (req, res) => {
     try {
         const { employeeId } = req.body;
@@ -114,12 +119,23 @@ router.get("/today/:employeeId", async (req, res) => {
     try {
         const today = getToday();
 
-        const record = await Attendance.findOne({
+        let record = await Attendance.findOne({
             employeeId: req.params.employeeId,
             date: today
         });
 
+        // ✅ If no record → send default values
+        if (!record) {
+            return res.json({
+                checkIn: null,
+                checkOut: null,
+                breakStart: null,
+                breakEnd: null
+            });
+        }
+
         res.json(record);
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

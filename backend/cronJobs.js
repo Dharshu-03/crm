@@ -1,6 +1,33 @@
 import cron from "node-cron";
 import Lead from "./models/leads.js";
 
+import cron from "node-cron";
+import Attendance from "./models/attendance.js"; // adjust path if needed
+
+// 🔥 Runs every day at 12:00 AM
+cron.schedule("0 0 * * *", async () => {
+    try {
+        const today = new Date();
+
+        // get today's start
+        const startOfToday = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+        );
+
+        // delete today's attendance OR reset it
+        await Attendance.deleteMany({
+            date: { $gte: startOfToday }
+        });
+
+        console.log("Attendance reset for new day");
+
+    } catch (err) {
+        console.error("Reset error:", err);
+    }
+});
+
 cron.schedule("* * * * *", async () => {
     try {
         const now = new Date();

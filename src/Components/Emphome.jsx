@@ -39,7 +39,9 @@ const Emphome = () => {
             setBreakHistory(res2.data);
 
             const res3 = await API.get(`/api/employees/${employeeId}`);
-            setEmployeeName(res3.data.fname);
+            setEmployeeName(
+                `${res3.data.fname || ""} ${res3.data.lname || ""}`.trim()
+            );
 
         } catch (err) {
             console.error(err);
@@ -67,7 +69,7 @@ const Emphome = () => {
     };
 
     const formatTime = (date) => {
-        if (!date) return "--:--";
+        if (!date || date === "") return "--:--_";
         return new Date(date).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -78,6 +80,16 @@ const Emphome = () => {
         if (!date) return "--";
         return new Date(date).toLocaleDateString();
     };
+
+    const formatName = (name) => {
+        if (!name) return "User";
+
+        return name
+            .toLowerCase()
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    };
     return (
         <div>
             <div className="homeheading">
@@ -87,7 +99,7 @@ const Emphome = () => {
                 </div>
                 <div>
                     <h6>Good Morning</h6>
-                    <h1>{employeeName || "User"}</h1>
+                    <h1>{formatName(employeeName)}</h1>
                 </div>
             </div>
             <div className="homemain">
