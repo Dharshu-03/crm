@@ -70,10 +70,10 @@ const Emphome = () => {
         if (!date) return "--:--";
         return new Date(date).toLocaleTimeString([], {
             hour: "2-digit",
-            minute: "2-digit"
-        });
+            minute: "2-digit",
+            hour12: true   // ✅ THIS LINE
+        }).toUpperCase();
     };
-
     const formatDate = (date) => {
         if (!date) return "--";
         return new Date(date).toLocaleDateString();
@@ -96,7 +96,15 @@ const Emphome = () => {
                 <div className="time">
                     <div>
                         <div className="checkin">
-                            <h5>Check in</h5>
+                            <h5>
+                                {
+                                    !safeAttendance.checkIn
+                                        ? "Check In"
+                                        :
+                                        "Checked-In"
+
+                                }
+                            </h5>
                             <h5>{formatTime(safeAttendance.checkIn)}</h5>
                         </div>
                         <div className="checkin">
@@ -112,8 +120,8 @@ const Emphome = () => {
                             backgroundColor: !safeAttendance.checkIn
                                 ? "#ccc"
                                 : !safeAttendance.checkOut
-                                    ? "green"
-                                    : "red"
+                                    ? "#64E800"
+                                    : "#E80000"
                         }}
                     >
                     </button>
@@ -129,7 +137,7 @@ const Emphome = () => {
                                 <h5>{formatTime(safeAttendance.breakStart)}</h5>
                             </div>
                             <div className="checkin">
-                                <h5>Check out</h5>
+                                <h5>Ended</h5>
                                 <h5>{formatTime(safeAttendance.breakEnd)}</h5>
                             </div>
                         </div>
@@ -144,8 +152,8 @@ const Emphome = () => {
                                 backgroundColor: !safeAttendance.breakStart
                                     ? "#ccc"
                                     : !safeAttendance.breakEnd
-                                        ? "green"
-                                        : "red"
+                                        ? "#64E800"
+                                        : "#E80000"
                             }}
                         >
                         </button>
