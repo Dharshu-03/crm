@@ -167,3 +167,19 @@
 .first div {
     margin: 10px 10px 10px 20px;
 }
+
+.homemsg {
+
+
+    font-family: 'REM';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+
+    letter-spacing: 0.001em;
+
+    color: #616161;
+
+
+}

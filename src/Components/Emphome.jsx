@@ -74,6 +74,15 @@ const Emphome = () => {
         }
     };
 
+
+    const timeAgo = (dateStr) => {
+        const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+        if (diff < 60) return `${diff}s ago`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+    };
+
     const formatTime = (date) => {
         if (!date || date === "") return "--:--_";
         return new Date(date).toLocaleTimeString([], {
@@ -218,17 +227,10 @@ const Emphome = () => {
                                 padding: "10px 16px",
                                 borderBottom: "1px solid #f0f0f0"
                             }}>
-                                <div style={{
-                                    width: "8px", height: "8px",
-                                    borderRadius: "50%",
-                                    backgroundColor: "#888",
-                                    flexShrink: 0
-                                }} />
+
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ margin: 0, fontSize: "14px" }}>{item.message}</p>
-                                    <p style={{ margin: 0, fontSize: "11px", color: "#aaa" }}>
-                                        {new Date(item.createdAt).toLocaleString()}
-                                    </p>
+                                    <li className='homemsg'>{item.message}-{timeAgo(item.createdAt)}</li>
+
                                 </div>
                             </div>
                         ))
