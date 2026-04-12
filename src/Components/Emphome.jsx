@@ -11,6 +11,7 @@ const Emphome = () => {
     const [breakHistory, setBreakHistory] = useState([]);
     const [attendance, setAttendance] = useState(null);
     const [employeeName, setEmployeeName] = useState("");
+    const [recentActivity, setRecentActivity] = useState([]);
     const safeAttendance = attendance || {};
     const handleCheckInOut = async () => {
         const employeeId = localStorage.getItem("employeeId");
@@ -28,6 +29,8 @@ const Emphome = () => {
         }
     };
 
+
+
     const fetchData = async () => {
         try {
             const employeeId = localStorage.getItem("employeeId");
@@ -43,11 +46,14 @@ const Emphome = () => {
                 `${res3.data.fname || ""} ${res3.data.lname || ""}`.trim()
             );
 
+            // ✅ Fetch employee-specific recent activity
+            const res4 = await API.get(`/api/employees/recent-activity/${employeeId}`);
+            setRecentActivity(res4.data);
+
         } catch (err) {
             console.error(err);
         }
     };
-
     useEffect(() => {
         fetchData();
     }, []);
@@ -200,8 +206,34 @@ const Emphome = () => {
                 </div>
 
                 <h3>Recent Activity</h3>
-
-                <div className="homeactivity"></div>
+                <div className="homeactivity">
+                    {recentActivity.length === 0 ? (
+                        <p style={{ margin: "20px", color: "#888" }}>No recent activity</p>
+                    ) : (
+                        recentActivity.map((item, index) => (
+                            <div className="activity-item" key={index} style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "12px",
+                                padding: "10px 16px",
+                                borderBottom: "1px solid #f0f0f0"
+                            }}>
+                                <div style={{
+                                    width: "8px", height: "8px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#888",
+                                    flexShrink: 0
+                                }} />
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ margin: 0, fontSize: "14px" }}>{item.message}</p>
+                                    <p style={{ margin: 0, fontSize: "11px", color: "#aaa" }}>
+                                        {new Date(item.createdAt).toLocaleString()}
+                                    </p>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
 
             </div>
             <Empnav></Empnav>

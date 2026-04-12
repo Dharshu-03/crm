@@ -296,6 +296,21 @@ router.get("/active", async (req, res) => {
     }
 });
 
+router.get("/recent-activity/:employeeId", async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+
+        const activities = await Activity.find({
+            employeeId: new mongoose.Types.ObjectId(employeeId)
+        })
+            .sort({ createdAt: -1 })
+            .limit(7);
+
+        res.json(activities);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 router.post("/login", async (req, res) => {
     try {

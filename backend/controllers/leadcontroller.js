@@ -4,6 +4,7 @@ import fs from "fs";
 
 import Employee from "../models/employee.js";
 import logActivity from "../utils/logActivity.js";
+import mongoose from "mongoose";
 
 
 export const addLead = async (req, res) => {
@@ -29,7 +30,8 @@ export const addLead = async (req, res) => {
 
         await logActivity(
             "lead_assigned",
-            `Lead ${lead.name} assigned to employee`
+            `Lead ${lead.name} assigned to employee`,
+            new mongoose.Types.ObjectId(employee._id)
         );
 
     } catch (err) {

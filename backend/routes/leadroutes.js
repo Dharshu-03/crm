@@ -6,6 +6,7 @@ import fs from "fs";
 import readline from "readline";
 import Employee from "../models/employee.js";
 import logActivity from "../utils/logActivity.js";
+import mongoose from "mongoose";
 
 
 const router = express.Router();
@@ -55,7 +56,8 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
 
                 await logActivity(
                     "lead_assigned",
-                    `Lead ${lead.name} assigned to ${employee.fname}`
+                    `Lead ${lead.name} assigned to ${employee.fname}`,
+                    new mongoose.Types.ObjectId(employee._id)
                 );
             }
         }

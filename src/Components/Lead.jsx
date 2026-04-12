@@ -36,6 +36,11 @@ const Lead = () => {
     const [uploadedCount, setUploadedCount] = useState(0);
     const [selectedEmployees, setSelectedEmployees] = useState([]);
     const abortControllerRef = useRef(null);
+
+    const capitalize = (text) => {
+        if (!text) return "";
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -46,7 +51,7 @@ const Lead = () => {
                 date,
                 source: srcs,
                 location,
-                language
+                language: capitalize(language)
             });
 
             alert("Lead added successfully");
