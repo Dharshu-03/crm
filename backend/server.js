@@ -5,11 +5,12 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import leadroutes from "./routes/leadroutes.js";
-import employeeroutes from "./routes/employeeroutes.js"
+import employeeroutes from "./routes/employeeroutes.js";
 import attendanceRoutes from "./routes/attendanceroutes.js";
-
 import Employee from "./models/employee.js";
 import bcrypt from "bcrypt";
+
+dotenv.config(); // ✅ FIRST
 
 const createDefaultAdmin = async () => {
     const adminExists = await Employee.findOne({ role: "admin" });
@@ -34,10 +35,6 @@ const createDefaultAdmin = async () => {
     }
 };
 
-createDefaultAdmin();
-
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -48,15 +45,21 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/attendance", attendanceRoutes);
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Atlas Connected"))
-    .catch(err => console.log(err));
-
 app.use("/api/leads", leadroutes);
 app.use("/api/employees", employeeroutes);
 
+// ✅ Test route
+app.get("/", (req, res) => {
+    res.send("Backend is running 🚀");
+});
 
-
+// ✅ Connect DB THEN create admin
+mongoose.connect(process.env.MONGO_URI)
+    .then(async () => {
+        console.log("MongoDB Atlas Connected");
+        await createDefaultAdmin();
+    })
+    .catch(err => console.log(err));
 
 const PORT = process.env.PORT || 5000;
 
