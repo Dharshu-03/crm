@@ -83,6 +83,38 @@ const Lead = () => {
     };
 
 
+    const getPagination = () => {
+        const pages = [];
+
+        if (totalPages <= 7) {
+
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+
+            pages.push(1, 2, 3);
+
+
+            if (page > 4) {
+                pages.push("...");
+            }
+
+
+            if (page > 3 && page < totalPages - 2) {
+                pages.push(page);
+            }
+
+
+            if (page < totalPages - 3) {
+                pages.push("...");
+            }
+
+            pages.push(totalPages - 2, totalPages - 1, totalPages);
+        }
+
+        return pages;
+    };
 
     const fetchLeads = async (pageNum = 1, searchTerm = "") => {
         setLoading(true);
@@ -258,20 +290,33 @@ const Lead = () => {
 
                         )}
 
-                        {/* {!search && ( */}
-                        <div className="pagination">
+                        <div className="emppagination">
                             <div onClick={() => page > 1 && fetchLeads(page - 1, "")}>
                                 <img src="/images/pre.png" alt="" />
                                 Previous
                             </div>
-                            <span>Page {page} of {totalPages}</span>
+
+                            <span>
+                                {getPagination().map((p, i) =>
+                                    p === "..." ? (
+                                        <span key={i} className="dots">...</span>
+                                    ) : (
+                                        <button
+                                            key={p + "-" + i}
+                                            className={p === page ? "active-page" : "page"}
+                                            onClick={() => fetchLeads(p, "")}
+                                        >
+                                            {p}
+                                        </button>
+                                    )
+                                )}
+                            </span>
                             <div onClick={() => page < totalPages && fetchLeads(page + 1, "")}>
 
                                 Next
                                 <img src="/images/next.png" alt="" />
                             </div>
                         </div>
-                        {/* )} */}
 
 
                         {showCsvPopup && (

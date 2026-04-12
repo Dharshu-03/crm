@@ -413,3 +413,37 @@ form {
     text-align: center;
     margin-left: 100px;
 }
+
+.active-page {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+
+
+    width: 40px;
+    height: 40px;
+    border: none;
+
+    border-radius: 8px;
+
+}
+
+.page {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+
+
+    width: 40px;
+    height: 40px;
+    border: none;
+
+    border-radius: 8px;
+
+}
