@@ -1,7 +1,6 @@
 import cron from "node-cron";
 import Lead from "./models/leads.js";
 
-import cron from "node-cron";
 import Attendance from "./models/attendance.js"; // adjust path if needed
 
 // 🔥 Runs every day at 12:00 AM

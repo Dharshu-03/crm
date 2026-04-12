@@ -144,7 +144,6 @@ const Dashboard = () => {
                                     <div className="activity-item" key={act._id}>
                                         <li className="activity-msg">{act.message}-{timeAgo(act.createdAt)}</li>
 
-                                        <p className="activity-time"></p>
                                     </div>
                                 ))}
                         </div>

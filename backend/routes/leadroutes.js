@@ -42,6 +42,7 @@ router.post("/upload-csv", upload.single("csv"), async (req, res) => {
             );
 
             if (employee) {
+                console.log("employee._id →", employee._id, typeof employee._id);
                 bulkOps.push({
                     updateOne: {
                         filter: { _id: lead._id },
