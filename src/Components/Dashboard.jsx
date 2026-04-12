@@ -130,25 +130,26 @@ const Dashboard = () => {
 
         return (
             <div className="recent-feed">
-                <p className="recent-title">Recent Activity</p>
+                <p className="recent-title">Recent Activity Feed</p>
                 <div className="recent-scroll">
                     {activities.length === 0 ? (
                         <p className="recent-empty">No recent activity</p>
                     ) : (
-                        activities.map(act => {
-                            const meta = iconMap[act.type] || { icon: "📌", color: "#888" };
-                            return (
-                                <div className="activity-item" key={act._id}>
-                                    <span className="activity-icon" style={{ background: meta.color + "18", color: meta.color }}>
-                                        {meta.icon}
-                                    </span>
-                                    <div className="activity-info">
-                                        <p className="activity-msg">{act.message}</p>
-                                        <p className="activity-time">{timeAgo(act.createdAt)}</p>
+
+                        <div className="activity-list">
+                            {[...activities]
+                                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // latest first
+                                .slice(0, 7)
+                                .map((act) => (
+                                    <div className="activity-item" key={act._id}>
+                                        <li className="activity-msg">{act.message}-{timeAgo(act.createdAt)}</li>
+
+                                        <p className="activity-time"></p>
                                     </div>
-                                </div>
-                            );
-                        })
+                                ))}
+                        </div>
+
+
                     )}
                 </div>
             </div>

@@ -249,7 +249,7 @@ const Lead = () => {
                                                 <td>{lead.employeeId || "-"}</td>
                                                 <td>{lead.status}  </td>
                                                 <td>{lead.type}</td>
-                                                <td>-</td>
+                                                <td>{formatDate(lead.scheduledDate)}</td>
                                             </tr>
                                         ))
                                     )}

@@ -61,6 +61,11 @@
 
 }
 
+.nav>.top>h4>a:nth-child(1) {
+    color: #0003D0;
+}
+
+
 
 
 .top {
