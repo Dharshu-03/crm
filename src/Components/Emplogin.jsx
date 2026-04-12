@@ -19,12 +19,9 @@ const Emplogin = () => {
 
             console.log("LOGIN SUCCESS:", res.data);
 
-            // ✅ store token (if you implement JWT)
-
-            // 🔥 THIS IS THE MISSING PART
-            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("employeeToken", res.data.token);  // match api.js
             localStorage.setItem("employeeId", res.data.employee.id);
-            alert("Login successful");
+            localStorage.setItem("employeeName", `${res.data.employee.fname} ${res.data.employee.lname}`);
 
             navigate("/empsettings");  // redirect
 

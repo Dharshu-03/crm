@@ -7,6 +7,7 @@ import readline from "readline";
 import Employee from "../models/employee.js";
 import logActivity from "../utils/logActivity.js";
 import mongoose from "mongoose";
+import { isAdmin, verifyToken } from "../authMiddleware.js";
 
 
 const router = express.Router();
@@ -15,7 +16,7 @@ const router = express.Router();
 const upload = multer({ dest: "/tmp/" });
 
 /* ================= CSV UPLOAD ================= */
-router.post("/upload-csv", upload.single("csv"), async (req, res) => {
+router.post("/upload-csv", isAdmin, upload.single("csv"), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
     }
@@ -161,10 +162,10 @@ function splitCsvLine(line) {
 }
 
 /* ================= ADD LEAD ================= */
-router.post("/add", addLead);
+router.post("/add", isAdmin, addLead);
 
 /* ================= GET ALL LEADS ================= */
-router.get("/", async (req, res) => {
+router.get("/", isAdmin, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 9;
@@ -196,20 +197,23 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/my-leads/:employeeId", async (req, res) => {
+router.get("/my-leads/:employeeId", verifyToken, async (req, res) => {
     try {
         const { employeeId } = req.params;
 
         const leads = await Lead.find({ employeeId: employeeId })
             .sort({ assignedDate: -1 }); // latest first
 
+        if (req.user.id !== req.params.employeeId) {
+            return res.status(403).json({ message: "Access denied" });
+        }
         res.status(200).json(leads);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-router.put("/update-type/:id", async (req, res) => {
+router.put("/update-type/:id", isAdmin, async (req, res) => {
     try {
         const { type } = req.body;
 
@@ -227,7 +231,7 @@ router.put("/update-type/:id", async (req, res) => {
 
 
 
-router.put("/update-status/:id", async (req, res) => {
+router.put("/update-status/:id", verifyToken, async (req, res) => {
     try {
         const lead = await Lead.findById(req.params.id);
 
@@ -250,7 +254,7 @@ router.put("/update-status/:id", async (req, res) => {
     }
 });
 
-router.put("/update-schedule/:id", async (req, res) => {
+router.put("/update-schedule/:id", verifyToken, async (req, res) => {
     try {
         const { scheduledDate } = req.body;
 
@@ -276,7 +280,7 @@ router.put("/update-schedule/:id", async (req, res) => {
     }
 });
 
-router.get("/my-schedules", async (req, res) => {
+router.get("/my-schedules", verifyToken, async (req, res) => {
     try {
         const employeeId = req.query.employeeId;
         const now = new Date();

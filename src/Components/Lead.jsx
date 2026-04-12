@@ -147,9 +147,10 @@ const Lead = () => {
         e.preventDefault();
         if (e.dataTransfer.files.length > 0) setCsvFile(e.dataTransfer.files[0]);
     };
+
     useEffect(() => {
-        fetchLeads(1, "");
-    }, []);
+        fetchLeads(1, search);
+    }, [search]);
 
     const formatDate = (dateStr) => {
         const d = new Date(dateStr);

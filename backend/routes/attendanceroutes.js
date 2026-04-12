@@ -1,5 +1,6 @@
 import express from "express";
 import Attendance from "../models/attendance.js";
+import { verifyToken } from "../authMiddleware.js";
 
 const router = express.Router();
 
@@ -10,9 +11,9 @@ const getToday = () => {
         String(now.getMonth() + 1).padStart(2, "0") + "-" +
         String(now.getDate()).padStart(2, "0");
 };
-router.post("/check-in", async (req, res) => {
+router.post("/check-in", verifyToken, async (req, res) => {
     try {
-        const { employeeId } = req.body;
+        const employeeId = req.user.id;
 
         const today = getToday();
 
@@ -40,9 +41,9 @@ router.post("/check-in", async (req, res) => {
     }
 });
 
-router.post("/check-out", async (req, res) => {
+router.post("/check-out", verifyToken, async (req, res) => {
     try {
-        const { employeeId } = req.body;
+        const employeeId = req.user.id;
 
         const today = getToday();
 
@@ -65,9 +66,9 @@ router.post("/check-out", async (req, res) => {
     }
 });
 
-router.post("/break-start", async (req, res) => {
+router.post("/break-start", verifyToken, async (req, res) => {
     try {
-        const { employeeId } = req.body;
+        const employeeId = req.user.id;
 
         const today = getToday();
 
@@ -89,9 +90,9 @@ router.post("/break-start", async (req, res) => {
 });
 
 
-router.post("/break-end", async (req, res) => {
+router.post("/break-end", verifyToken, async (req, res) => {
     try {
-        const { employeeId } = req.body;
+        const employeeId = req.user.id;
 
         const today = getToday();
 
@@ -115,8 +116,11 @@ router.post("/break-end", async (req, res) => {
 });
 
 
-router.get("/today/:employeeId", async (req, res) => {
+router.get("/today/:employeeId", verifyToken, async (req, res) => {
     try {
+        if (req.user.id !== req.params.employeeId) {
+            return res.status(403).json({ error: "Access denied" });
+        }
         const today = getToday();
 
         let record = await Attendance.findOne({
@@ -124,7 +128,8 @@ router.get("/today/:employeeId", async (req, res) => {
             date: today
         });
 
-        // ✅ If no record → send default values
+
+
         if (!record) {
             return res.json({
                 checkIn: null,
@@ -141,8 +146,13 @@ router.get("/today/:employeeId", async (req, res) => {
     }
 });
 
-router.get("/break-history/:employeeId", async (req, res) => {
+router.get("/break-history/:employeeId", verifyToken, async (req, res) => {
     try {
+        // ✅ check first, before any DB query
+        if (req.user.id !== req.params.employeeId) {
+            return res.status(403).json({ error: "Access denied" });
+        }
+
         const records = await Attendance.find({
             employeeId: req.params.employeeId,
             breakStart: { $ne: null },

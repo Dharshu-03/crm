@@ -35,13 +35,21 @@ const Employee = () => {
             return;
         }
         try {
-            await API.post("/api/employees/add", {
-                fname,
-                lname,
-                email,
-                location,
-                language
-            });
+            await API.post(
+                "/api/employees/add",
+                {
+                    fname,
+                    lname,
+                    email,
+                    location,
+                    language
+                },
+                {
+                    headers: {
+                        "x-admin-key": "mysecret123"
+                    }
+                }
+            );
 
             alert("Employee added successfully");
 
@@ -68,9 +76,21 @@ const Employee = () => {
             if (deleteAll) {
                 const ids = employee.map(emp => emp._id);
 
-                await API.post("/api/employees/delete-multiple", { ids });
+                await API.post(
+                    "/api/employees/delete-multiple",
+                    { ids },
+                    {
+                        headers: {
+                            "x-admin-key": "mysecret123"
+                        }
+                    }
+                );
             } else {
-                await API.delete(`/api/employees/${id}`);
+                await API.delete(`/api/employees/${id}`, {
+                    headers: {
+                        "x-admin-key": "mysecret123"
+                    }
+                });
             }
 
             setDelelteAll(false); // reset after delete
@@ -116,11 +136,14 @@ const Employee = () => {
         e.preventDefault();
 
         try {
-            await API.put(`/api/employees/${editEmployee._id}`, {
-                fname,
-                lname,
-                location
-            });
+            await API.put(
+                `/api/employees/${editEmployee._id}`,
+                {
+                    fname,
+                    lname,
+                    location
+                }
+            );
 
             alert("Employee updated successfully");
 

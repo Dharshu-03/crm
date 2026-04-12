@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Nav from './Navbar.jsx'
 import './Settings.css'
+import API from "../api"; // adjust path
 
 import { useEffect } from "react";
 
@@ -20,48 +21,51 @@ const Settings = () => {
     const navigate = useNavigate();
 
 
-    // useEffect(() => {
-    //     const storedEmail = localStorage.getItem("email");
-    //     setEmail(storedEmail);
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await API.get("/api/employees/me");
 
-    //     const fetchUser = async () => {
-    //         try {
-    //             const res = await API.get(`/api/auth/user/${storedEmail}`);
 
-    //             setfname(res.data.fname || "");
-    //             setlname(res.data.lname || "");
+                setEmail(res.data.email || "");
+                setfname(res.data.fname || "");
+                setlname(res.data.lname || "");
+            } catch (err) {
 
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
+                if (err.response?.status === 401) {
+                    navigate("/emplogin");
+                }
+                console.error(err);
+            }
+        };
 
-    //     fetchUser();
-    // }, []);
-
+        fetchUser();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+
         if (password !== "") {
             if (password.length < 8) return setError("Password too short");
             if (password !== confirm) return setError("Passwords do not match");
         }
-        if (fname.length < 3) return setError("first name too short");
-        if (lname.length < 3) return setError("last name too short");
-        const payload = { email, fname, lname };
+
+        if (fname.length < 3) return setError("First name too short");
+        if (lname.length < 3) return setError("Last name too short");
+
+        const payload = { fname, lname };
         if (password) payload.password = password;
-        // try {
-        //     await API.put("/update", payload);
-        //     alert("Profile updated successfully");
-        //     setError("");
-        //     setPassword("");
-        //     setConfirm("");
-        // }
-        // catch (err) {
-        //     setError(err.response?.data?.msg || "Login failed");
-        // }
 
+        try {
+            await API.put("/api/employees/me", payload);
+            alert("Profile updated successfully");
 
+            setPassword("");
+            setConfirm("");
+        } catch (err) {
+            setError(err.response?.data?.message || "Update failed");
+        }
     };
     return (
         <>
